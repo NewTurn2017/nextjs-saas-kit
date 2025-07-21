@@ -1,10 +1,17 @@
---
--- NextAuth.js Supabase Adapter Setup
--- Note: SupabaseAdapter only works with public schema
---
+-- Complete Supabase Database Setup for Next.js SaaS Starter
+-- This script sets up all necessary tables for NextAuth v5 with Supabase
+
+-- Enable UUID extension if not already enabled
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Drop existing tables if they exist (for clean setup)
+DROP TABLE IF EXISTS public.verification_tokens CASCADE;
+DROP TABLE IF EXISTS public.sessions CASCADE;
+DROP TABLE IF EXISTS public.accounts CASCADE;
+DROP TABLE IF EXISTS public.users CASCADE;
 
 -- Create users table
-CREATE TABLE IF NOT EXISTS public.users (
+CREATE TABLE public.users (
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     name text,
     email text,
@@ -15,7 +22,7 @@ CREATE TABLE IF NOT EXISTS public.users (
 );
 
 -- Create accounts table
-CREATE TABLE IF NOT EXISTS public.accounts (
+CREATE TABLE public.accounts (
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     type text NOT NULL,
     provider text NOT NULL,
@@ -39,7 +46,7 @@ CREATE TABLE IF NOT EXISTS public.accounts (
 );
 
 -- Create sessions table
-CREATE TABLE IF NOT EXISTS public.sessions (
+CREATE TABLE public.sessions (
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     expires timestamp with time zone NOT NULL,
     "sessionToken" text NOT NULL,
@@ -53,7 +60,7 @@ CREATE TABLE IF NOT EXISTS public.sessions (
 );
 
 -- Create verification_tokens table
-CREATE TABLE IF NOT EXISTS public.verification_tokens (
+CREATE TABLE public.verification_tokens (
     identifier text,
     token text,
     expires timestamp with time zone NOT NULL,
@@ -62,7 +69,11 @@ CREATE TABLE IF NOT EXISTS public.verification_tokens (
     CONSTRAINT token_identifier_unique UNIQUE (token, identifier)
 );
 
--- Grant permissions
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS accounts_userId_idx ON public.accounts("userId");
+CREATE INDEX IF NOT EXISTS sessions_userId_idx ON public.sessions("userId");
+
+-- Grant permissions to service_role
 GRANT ALL ON public.users TO service_role;
 GRANT ALL ON public.accounts TO service_role;
 GRANT ALL ON public.sessions TO service_role;
@@ -82,27 +93,15 @@ CREATE OR REPLACE FUNCTION public.uid() RETURNS uuid
 	)::uuid
 $$;
 
--- Create policies for users table
+-- Create RLS policies for users table
 CREATE POLICY "Can view own user data." ON public.users 
     FOR SELECT USING (public.uid() = id);
     
 CREATE POLICY "Can update own user data." ON public.users 
     FOR UPDATE USING (public.uid() = id);
 
---
--- Additional tables can be added here
---
--- Example structure for your own tables:
--- create table your_table (
---   id uuid not null default uuid_generate_v4() primary key,
---   created_at timestamp with time zone not null default now(),
---   updated_at timestamp with time zone not null default now(),
---   user_id uuid not null references public.users(id) on delete cascade,
---   -- your columns here
--- );
---
--- Don't forget to:
--- 1. Enable RLS: alter table your_table enable row level security;
--- 2. Create policies for CRUD operations
--- 3. Add foreign key constraints if needed
--- 4. Create indexes for frequently queried columns
+-- Verify setup
+SELECT 
+    'Setup completed successfully!' as message,
+    (SELECT COUNT(*) FROM pg_tables WHERE schemaname = 'public' AND tablename IN ('users', 'accounts', 'sessions', 'verification_tokens')) as tables_created,
+    (SELECT COUNT(*) FROM pg_policies WHERE tablename = 'users') as rls_policies_created;

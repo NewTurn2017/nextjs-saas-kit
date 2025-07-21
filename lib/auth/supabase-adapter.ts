@@ -1,6 +1,15 @@
 /**
- * Custom Supabase Adapter for NextAuth that uses public schema
- * Based on @auth/supabase-adapter but with public schema support
+ * Custom Supabase Adapter for NextAuth v5
+ * 
+ * This is a custom implementation because the official @auth/supabase-adapter
+ * hardcodes the schema to 'next_auth', but we need to use 'public' schema.
+ * 
+ * @see https://github.com/nextauthjs/next-auth/issues/[issue-number]
+ * 
+ * Key differences from official adapter:
+ * - Uses 'public' schema instead of 'next_auth'
+ * - Properly handles date conversions for NextAuth
+ * - Compatible with Supabase RLS policies
  */
 
 import { createClient } from "@supabase/supabase-js"

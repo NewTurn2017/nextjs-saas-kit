@@ -36,6 +36,11 @@ Next.js 15로 구축된 현대적이고 확장 가능한 SaaS 스타터 킷입�
 
 ## 🚀 빠른 시작 가이드
 
+### 사전 요구사항
+- Node.js 18+ 또는 Bun
+- Supabase 계정
+- Google Cloud 계정 (Google OAuth 사용 시)
+
 ### 1. 프로젝트 설정
 
 ```bash
@@ -43,13 +48,14 @@ Next.js 15로 구축된 현대적이고 확장 가능한 SaaS 스타터 킷입�
 git clone https://github.com/NewTurn2017/nextjs-saas-kit.git
 cd nextjs-saas-kit
 
-# 의존성 설치
+# 의존성 설치 (Bun 권장)
 bun install
+# 또는 npm install
 
 # 환경 변수 파일 생성
 cp .env.example .env.local
 
-# 개발 환경 체크 (자동으로 실행됨)
+# 개발 환경 체크
 bun setup
 ```
 
@@ -57,12 +63,16 @@ bun setup
 
 `.env.local` 파일을 열고 필요한 값들을 설정합니다:
 
+#### Supabase 설정
+1. [Supabase Dashboard](https://app.supabase.com)에서 프로젝트 생성
+2. Settings > API에서 다음 값들을 복사:
+
 ```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+# Supabase (Settings > API에서 복사)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SECRET_KEY=your_secret_key
-SUPABASE_JWT_SECRET=your_jwt_secret
+SUPABASE_SECRET_KEY=your_service_role_key  # ⚠️ service_role 키 사용!
+SUPABASE_JWT_SECRET=your_jwt_secret  # Settings > Database > JWT Secret
 
 # Email
 EMAIL_SERVER_USER=your_email@gmail.com
@@ -71,22 +81,29 @@ EMAIL_SERVER_HOST=smtp.gmail.com
 EMAIL_SERVER_PORT=465
 EMAIL_FROM=your_email@gmail.com
 
-# Google OAuth
+# Google OAuth (선택사항)
 AUTH_GOOGLE_ID=your_google_client_id
 AUTH_GOOGLE_SECRET=your_google_client_secret
 
-# NextAuth Secret (아래 명령어로 생성)
-# openssl rand -base64 32
+# NextAuth Secret (필수! 아래 명령어로 생성)
 AUTH_SECRET=your_generated_auth_secret
 ```
 
-**AUTH_SECRET 생성하기:**
-
+#### NextAuth Secret 생성 (필수)
 ```bash
 openssl rand -base64 32
 ```
 
-**Gmail 앱 비밀번호 설정 가이드**
+#### Google OAuth 설정 (선택사항)
+1. [Google Cloud Console](https://console.cloud.google.com/) 접속
+2. 새 프로젝트 생성 또는 기존 프로젝트 선택
+3. "APIs & Services" > "Credentials" > "Create Credentials" > "OAuth client ID"
+4. Application type: Web application
+5. Authorized redirect URIs 추가:
+   - `http://localhost:3000/api/auth/callback/google` (개발용)
+   - `https://your-domain.com/api/auth/callback/google` (프로덕션용)
+
+#### Gmail 앱 비밀번호 설정 (이메일 인증 사용 시)
 
 1. Gmail 앱 비밀번호 생성
 
@@ -120,13 +137,13 @@ openssl rand -base64 32
 
 ### 3. 데이터베이스 설정
 
-```bash
-# Supabase 대시보드에서 SQL 실행
-# prompt/supabase_setup.md 파일의 내용을 복사하여 실행
+Supabase 대시보드의 SQL Editor에서 다음 중 하나를 실행:
 
-# 또는 도움말 보기
-bun setup:db
-```
+- **옵션 1**: `scripts/setup-database.sql` 파일의 전체 내용을 복사하여 실행
+- **옵션 2**: 아래 명령어로 설정 가이드 확인
+  ```bash
+  bun setup:db
+  ```
 
 ### 4. 개발 서버 실행
 
@@ -450,25 +467,22 @@ bun generate:types
 bun scripts/dev-check.ts
 ```
 
-### NextAuth AdapterError 오류
+### NextAuth 관련 문제
 
-Google OAuth 로그인 시 AdapterError가 발생하는 경우:
+Google OAuth 로그인이 작동하지 않는 경우:
 
-```bash
-# 1. 데이터베이스 연결 테스트
-bun scripts/test-db-connection.ts
+1. **데이터베이스 테이블 확인**
+   - Supabase Dashboard > Table Editor에서 `users`, `accounts`, `sessions`, `verification_tokens` 테이블 확인
+   - 없다면 `scripts/setup-database.sql` 실행
 
-# 2. 테이블이 없다면 SQL 실행
-# Supabase Dashboard > SQL Editor에서 다음 실행:
-# scripts/fix-auth-final.sql 파일 내용
+2. **환경 변수 확인**
+   - `SUPABASE_SECRET_KEY`가 service_role 키인지 확인 (anon 키 X)
+   - `AUTH_SECRET`가 설정되어 있는지 확인
 
-# 3. 브라우저 쿠키 삭제 후 재시도
-```
+3. **브라우저 쿠키 삭제**
+   - 개발자 도구 > Application > Storage > Clear site data
 
-**주의사항**:
-- `@auth/supabase-adapter`는 `public` 스키마만 지원합니다
-- NextAuth 테이블은 반드시 `public` 스키마에 생성되어야 합니다
-- 자세한 해결 방법은 `NEXTAUTH_FIX_GUIDE.md` 참조
+**참고**: 이 프로젝트는 `@auth/supabase-adapter`의 제한으로 인해 커스텀 어댑터를 사용합니다.
 
 ## 🚀 프로덕션 배포
 
@@ -480,11 +494,23 @@ bun scripts/test-db-connection.ts
 
 ### 환경 변수 체크리스트
 
-프로덕션에서 필요한 모든 환경 변수:
+프로덕션에서 필요한 환경 변수:
 
-- [ ] Supabase 자격 증명 (4개)
-- [ ] 이메일 서버 설정 (5개)
-- [ ] Google OAuth 자격 증명 (3개)
+**필수**:
+- [ ] `NEXT_PUBLIC_SUPABASE_URL` - Supabase 프로젝트 URL
+- [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anon 키
+- [ ] `SUPABASE_SECRET_KEY` - Supabase service_role 키
+- [ ] `SUPABASE_JWT_SECRET` - Supabase JWT secret
+- [ ] `AUTH_SECRET` - NextAuth 암호화 키
+
+**선택사항 (기능별)**:
+- [ ] `AUTH_GOOGLE_ID` - Google OAuth 클라이언트 ID
+- [ ] `AUTH_GOOGLE_SECRET` - Google OAuth 클라이언트 시크릿
+- [ ] `EMAIL_SERVER_USER` - SMTP 사용자 (이메일 인증 시)
+- [ ] `EMAIL_SERVER_PASSWORD` - SMTP 비밀번호
+- [ ] `EMAIL_SERVER_HOST` - SMTP 호스트
+- [ ] `EMAIL_SERVER_PORT` - SMTP 포트
+- [ ] `EMAIL_FROM` - 발신 이메일 주소
 
 ## 📄 라이선스
 

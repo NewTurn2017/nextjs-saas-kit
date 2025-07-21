@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthConfig } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
-// Use our patched adapter that supports public schema
-import { SupabaseAdapter } from "./supabase-adapter-patch"
+// Use our custom adapter that supports public schema
+import { SupabaseAdapter } from "./auth/supabase-adapter"
 import Resend from "next-auth/providers/resend"
 import { sendVerificationRequest } from "@/lib/authSendRequest"
 import config from "@/config"
@@ -9,7 +9,8 @@ import config from "@/config"
 
 const authConfig = {
 	secret: process.env.AUTH_SECRET,
-	debug: true, // Enable debug mode to see detailed errors
+	// Debug mode disabled for production
+	debug: process.env.NODE_ENV === 'development',
 	cookies: {
 		pkceCodeVerifier: {
 			name: 'next-auth.pkce.code_verifier',
@@ -38,7 +39,7 @@ const authConfig = {
 			})
 		] : []),
 	],
-	// Use our patched adapter that supports public schema
+	// Use our custom adapter that supports public schema
 	adapter: SupabaseAdapter({
 		url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
 		secret: process.env.SUPABASE_SECRET_KEY!,

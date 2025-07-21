@@ -1,59 +1,38 @@
 #!/usr/bin/env bun
 /**
- * Setup database with initial schema
- * This script runs the SQL from prompt/supabase_setup.md
+ * Database setup guide for NextAuth.js with Supabase
  */
 
-import { createClient } from '@supabase/supabase-js'
-import fs from 'fs/promises'
-import path from 'path'
-import { env } from '../lib/env'
+console.log(`
+🗄️  Supabase Database Setup Guide
+=================================
 
-async function setupDatabase() {
-  console.log('🗄️  Setting up Supabase database...\n')
+📍 Step 1: Go to your Supabase Dashboard
+   https://app.supabase.com
 
-  const supabase = createClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.SUPABASE_SECRET_KEY
-  )
+📍 Step 2: Navigate to SQL Editor
 
-  try {
-    // Read SQL file
-    const sqlPath = path.join(process.cwd(), 'prompt', 'supabase_setup.md')
-    const sqlContent = await fs.readFile(sqlPath, 'utf-8')
-    
-    // Extract SQL from markdown (everything after first -- line)
-    const sqlMatch = sqlContent.match(/^--[\s\S]+$/m)
-    if (!sqlMatch) {
-      throw new Error('Could not extract SQL from supabase_setup.md')
-    }
-    
-    const sql = sqlMatch[0]
-    
-    console.log('📝 Running database setup SQL...')
-    console.log('This will create:')
-    console.log('  - next_auth schema and tables')
-    console.log('  - users table in public schema')
-    console.log('  - Row Level Security policies')
-    console.log('  - Necessary functions and triggers\n')
+📍 Step 3: Copy and run the SQL from:
+   scripts/setup-database.sql
 
-    // Note: This is a simplified version. In practice, you'd want to
-    // run this SQL directly in Supabase SQL editor or via migrations
-    console.log('⚠️  For security reasons, please run the SQL directly in Supabase:')
-    console.log('1. Go to your Supabase project dashboard')
-    console.log('2. Navigate to SQL Editor')
-    console.log('3. Copy the contents of prompt/supabase_setup.md')
-    console.log('4. Paste and run the SQL\n')
-    
-    console.log('Or use Supabase CLI:')
-    console.log('  supabase db push\n')
-    
-    console.log('✅ Once complete, your database will be ready!')
+✨ What will be created:
+   ✅ Users table (for NextAuth authentication)
+   ✅ Accounts table (for OAuth providers like Google)  
+   ✅ Sessions table (for user sessions)
+   ✅ Verification tokens table (for email authentication)
+   ✅ RLS (Row Level Security) policies
+   ✅ Indexes for optimal performance
+   ✅ uid() function for secure data access
 
-  } catch (error) {
-    console.error('❌ Error:', error)
-    process.exit(1)
-  }
-}
+⚠️  IMPORTANT NOTES:
+   • All tables are created in the 'public' schema
+   • The @auth/supabase-adapter ONLY works with public schema
+   • Make sure to use the service_role key in your .env.local
 
-setupDatabase()
+📋 After running the SQL:
+   1. Verify tables exist in Table Editor
+   2. Check Authentication > Providers > Email is enabled
+   3. Configure Google OAuth if using Google sign-in
+
+🚀 Ready to start development!
+`);
