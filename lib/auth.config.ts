@@ -11,6 +11,10 @@ const authConfig = {
 	secret: process.env.AUTH_SECRET,
 	// Debug mode disabled for production
 	debug: process.env.NODE_ENV === 'development',
+	pages: {
+		signIn: '/auth/signin',
+		error: '/auth/error',
+	},
 	cookies: {
 		pkceCodeVerifier: {
 			name: 'next-auth.pkce.code_verifier',
