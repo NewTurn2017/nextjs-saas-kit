@@ -15,8 +15,8 @@ Next.js로 구축된 현대적인 SaaS 스타터 킷으로, 인증 및 이메일
 
 ```bash
 # 저장소 클론
-git clone <repository-url>
-cd next-saas-starter-main
+git clone https://github.com/NewTurn2017/nextjs-saas-kit.git
+cd nextjs-saas-kit
 
 # 의존성 설치
 bun install
@@ -160,7 +160,7 @@ bun dev
 ## 프로젝트 구조
 
 ```
-next-saas-starter-main/
+nextjs-saas-kit/
 ├── app/                    # Next.js App Router
 │   ├── api/               # API 라우트
 │   ├── app/               # 보호된 앱 페이지
