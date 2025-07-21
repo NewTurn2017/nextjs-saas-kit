@@ -70,7 +70,15 @@ EMAIL_FROM=your_email@gmail.com
 # Google OAuth
 AUTH_GOOGLE_ID=your_google_client_id
 AUTH_GOOGLE_SECRET=your_google_client_secret
+
+# NextAuth Secret (아래 명령어로 생성)
+# openssl rand -base64 32
 AUTH_SECRET=your_generated_auth_secret
+```
+
+**AUTH_SECRET 생성하기:**
+```bash
+openssl rand -base64 32
 ```
 
 ### 3. 데이터베이스 설정
