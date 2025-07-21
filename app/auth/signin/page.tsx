@@ -16,16 +16,22 @@ export default function SignInPage() {
     e.preventDefault()
     setIsLoading(true)
     setIsEmailSent(false)
+    
     try {
-      await signIn('resend', { 
+      const result = await signIn('resend', { 
         email,
         callbackUrl,
         redirect: false 
       })
-      // Show success message
-      setIsEmailSent(true)
-      // Clear email field
-      setEmail('')
+      
+      if (result?.error) {
+        console.error('Sign in error:', result.error)
+        // You could set an error state here if needed
+      } else {
+        // Show success message
+        setIsEmailSent(true)
+        // Don't clear email field immediately to show which email was used
+      }
     } catch (error) {
       console.error('Sign in error:', error)
     } finally {
@@ -76,17 +82,26 @@ export default function SignInPage() {
                   <p className="text-xs text-gray-400 mt-2">
                     Click the link in your email to sign in. The link expires in 24 hours.
                   </p>
+                  <button
+                    onClick={() => setIsEmailSent(false)}
+                    className="text-xs text-blue-400 hover:text-blue-300 mt-3 inline-block"
+                  >
+                    Didn't receive it? Try again
+                  </button>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Google Sign In */}
-          <button
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white hover:bg-gray-100 text-gray-800 font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          {/* Show form only if email hasn't been sent */}
+          {!isEmailSent && (
+            <>
+              {/* Google Sign In */}
+              <button
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white hover:bg-gray-100 text-gray-800 font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -134,17 +149,19 @@ export default function SignInPage() {
             </div>
           </form>
 
-          {/* Terms */}
-          <p className="mt-6 text-center text-xs text-gray-400">
-            By signing in, you agree to our{' '}
-            <Link href="/terms" className="text-blue-400 hover:text-blue-300">
-              Terms of Service
-            </Link>{' '}
-            and{' '}
-            <Link href="/privacy" className="text-blue-400 hover:text-blue-300">
-              Privacy Policy
-            </Link>
-          </p>
+              {/* Terms */}
+              <p className="mt-6 text-center text-xs text-gray-400">
+                By signing in, you agree to our{' '}
+                <Link href="/terms" className="text-blue-400 hover:text-blue-300">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link href="/privacy" className="text-blue-400 hover:text-blue-300">
+                  Privacy Policy
+                </Link>
+              </p>
+            </>
+          )}
         </div>
 
         {/* Additional Options */}

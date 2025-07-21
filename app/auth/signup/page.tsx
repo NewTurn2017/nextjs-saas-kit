@@ -16,16 +16,22 @@ export default function SignUpPage() {
     e.preventDefault()
     setIsLoading(true)
     setIsEmailSent(false)
+    
     try {
-      await signIn('resend', { 
+      const result = await signIn('resend', { 
         email,
         callbackUrl,
         redirect: false 
       })
-      // Show success message
-      setIsEmailSent(true)
-      // Clear email field
-      setEmail('')
+      
+      if (result?.error) {
+        console.error('Sign up error:', result.error)
+        // You could set an error state here if needed
+      } else {
+        // Show success message
+        setIsEmailSent(true)
+        // Don't clear email field immediately to show which email was used
+      }
     } catch (error) {
       console.error('Sign up error:', error)
     } finally {
@@ -76,6 +82,12 @@ export default function SignUpPage() {
                   <p className="text-xs text-gray-400 mt-2">
                     Click the link in your email to complete your sign up. The link expires in 24 hours.
                   </p>
+                  <button
+                    onClick={() => setIsEmailSent(false)}
+                    className="text-xs text-blue-400 hover:text-blue-300 mt-3 inline-block"
+                  >
+                    Didn't receive it? Try again
+                  </button>
                 </div>
               </div>
             </div>
