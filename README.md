@@ -5,6 +5,7 @@ Next.js 15로 구축된 현대적이고 확장 가능한 SaaS 스타터 킷입�
 ## ✨ 주요 기능
 
 ### 🚀 개발자 경험
+
 - **환경 변수 검증**: Zod를 활용한 타입 안전 환경 변수
 - **개발 환경 체크**: 자동 환경 검증 스크립트
 - **재사용 가능한 훅**: 일반적인 패턴을 위한 커스텀 React 훅
@@ -13,6 +14,7 @@ Next.js 15로 구축된 현대적이고 확장 가능한 SaaS 스타터 킷입�
 - **타입 안전성**: TypeScript strict 모드
 
 ### 🎨 UI/UX
+
 - **로딩 상태**: 스켈레톤, 스피너 컴포넌트
 - **에러 처리**: ErrorBoundary, 에러 메시지 컴포넌트
 - **빈 상태**: 데이터가 없을 때를 위한 EmptyState 컴포넌트
@@ -20,12 +22,14 @@ Next.js 15로 구축된 현대적이고 확장 가능한 SaaS 스타터 킷입�
 - **다크 모드 지원**: Tailwind CSS 기반
 
 ### 🔐 인증 & 보안
+
 - **Google OAuth**: NextAuth v5 (beta) 통합
 - **이메일 인증**: Nodemailer + React Email
 - **Row Level Security**: Supabase RLS 정책
 - **환경 변수 보호**: 런타임 검증
 
 ### 🗃️ 데이터베이스
+
 - **Supabase**: PostgreSQL 기반
 - **타입 생성**: 데이터베이스 스키마로부터 TypeScript 타입 자동 생성
 - **마이그레이션**: SQL 스크립트 지원
@@ -77,9 +81,42 @@ AUTH_SECRET=your_generated_auth_secret
 ```
 
 **AUTH_SECRET 생성하기:**
+
 ```bash
 openssl rand -base64 32
 ```
+
+**Gmail 앱 비밀번호 설정 가이드**
+
+1. Gmail 앱 비밀번호 생성
+
+1. Google 계정 보안 설정으로 이동
+
+
+    - https://myaccount.google.com/security 접속
+    - 또는 Google 계정 → 보안 탭
+
+2. 2단계 인증 활성화 (필수)
+
+
+    - "2단계 인증" 클릭
+    - 안내에 따라 활성화
+
+3. 앱 비밀번호 생성
+
+
+    - https://myaccount.google.com/apppasswords 접속
+    - "앱 선택" → "메일" 선택
+    - "기기 선택" → "기타(맞춤 이름)" 선택
+    - 이름 입력 (예: "Next.js App")
+    - "생성" 클릭
+
+4. 16자리 비밀번호 복사
+
+
+    - 생성된 16자리 비밀번호가 표시됨
+    - 이 비밀번호를 복사 (공백 없이)
+    - ⚠️ 이 비밀번호는 다시 볼 수 없으므로 안전하게 보관
 
 ### 3. 데이터베이스 설정
 
@@ -123,6 +160,7 @@ nextjs-saas-kit/
 ## 🪝 커스텀 훅
 
 ### useUser
+
 현재 인증된 사용자 정보를 가져옵니다.
 
 ```typescript
@@ -130,16 +168,17 @@ import { useUser } from '@/hooks'
 
 function Profile() {
   const { user, loading, error, refetch } = useUser()
-  
+
   if (loading) return <Spinner />
   if (error) return <ErrorMessage message={error.message} />
   if (!user) return <div>Please log in</div>
-  
+
   return <div>Welcome, {user.name}!</div>
 }
 ```
 
 ### useSupabase
+
 타입 안전한 Supabase 클라이언트를 제공합니다.
 
 ```typescript
@@ -147,16 +186,15 @@ import { useSupabase } from '@/hooks'
 
 function TodoList() {
   const supabase = useSupabase()
-  
+
   const fetchTodos = async () => {
-    const { data, error } = await supabase
-      .from('todos')
-      .select('*')
+    const { data, error } = await supabase.from('todos').select('*')
   }
 }
 ```
 
 ### useAsync
+
 비동기 작업을 위한 상태 관리를 제공합니다.
 
 ```typescript
@@ -170,7 +208,7 @@ function DataFetcher() {
     },
     true // 즉시 실행
   )
-  
+
   return (
     <div>
       {loading && <Spinner />}
@@ -182,6 +220,7 @@ function DataFetcher() {
 ```
 
 ### useDebounce
+
 값의 디바운싱을 제공합니다.
 
 ```typescript
@@ -190,7 +229,7 @@ import { useDebounce } from '@/hooks'
 function SearchInput() {
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 500)
-  
+
   useEffect(() => {
     if (debouncedSearch) {
       // API 호출
@@ -200,6 +239,7 @@ function SearchInput() {
 ```
 
 ### useLocalStorage
+
 로컬 스토리지와 동기화되는 상태를 제공합니다.
 
 ```typescript
@@ -207,7 +247,7 @@ import { useLocalStorage } from '@/hooks'
 
 function Settings() {
   const [theme, setTheme, removeTheme] = useLocalStorage('theme', 'light')
-  
+
   return (
     <select value={theme} onChange={(e) => setTheme(e.target.value)}>
       <option value="light">Light</option>
@@ -220,6 +260,7 @@ function Settings() {
 ## 🧩 UI 컴포넌트
 
 ### ErrorBoundary
+
 React 에러를 우아하게 처리합니다.
 
 ```typescript
@@ -240,6 +281,7 @@ function App() {
 ```
 
 ### Skeleton
+
 로딩 중 플레이스홀더를 표시합니다.
 
 ```typescript
@@ -256,6 +298,7 @@ import { Skeleton, CardSkeleton, TableSkeleton } from '@/components/ui'
 ```
 
 ### EmptyState
+
 데이터가 없을 때 표시합니다.
 
 ```typescript
@@ -274,6 +317,7 @@ import { FileX } from 'lucide-react'
 ```
 
 ### ErrorMessage
+
 에러 메시지를 일관되게 표시합니다.
 
 ```typescript
@@ -290,6 +334,7 @@ import { ErrorMessage } from '@/components/ui'
 ## 🛠️ 유틸리티 함수
 
 ### 포맷팅
+
 ```typescript
 import { formatDate, formatRelativeTime, formatCurrency, formatBytes } from '@/lib/utils'
 
@@ -300,6 +345,7 @@ formatBytes(1024) // "1 KB"
 ```
 
 ### 검증
+
 ```typescript
 import { isValidEmail, isValidUrl, validatePassword } from '@/lib/utils'
 
@@ -311,14 +357,12 @@ const passwordResult = validatePassword('MyP@ssw0rd')
 ```
 
 ### 일반 유틸리티
+
 ```typescript
 import { debounce, throttle, retry, sleep } from '@/lib/utils'
 
 // 재시도 로직
-const data = await retry(
-  () => fetch('/api/data'),
-  { retries: 3, delay: 1000 }
-)
+const data = await retry(() => fetch('/api/data'), { retries: 3, delay: 1000 })
 
 // 디바운싱
 const debouncedSearch = debounce(searchFunction, 300)
@@ -349,20 +393,25 @@ bun setup
 ## ⚙️ 설정
 
 ### VS Code 설정
+
 프로젝트에는 추천 VS Code 설정이 포함되어 있습니다:
+
 - 자동 포맷팅 (Prettier)
 - ESLint 통합
 - Tailwind CSS IntelliSense
 - TypeScript 지원
 
 ### Prettier 설정
+
 일관된 코드 스타일을 위한 설정:
+
 - 세미콜론 없음
 - 작은따옴표 사용
 - 2칸 들여쓰기
 - 100자 줄 길이
 
 ### 환경 변수 타입 안전성
+
 모든 환경 변수는 Zod 스키마로 검증됩니다:
 
 ```typescript
@@ -375,6 +424,7 @@ const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL
 ## 🐛 문제 해결
 
 ### 환경 변수 오류
+
 ```bash
 # 환경 변수 검증 실행
 bun check-env
@@ -384,6 +434,7 @@ bun check-env
 ```
 
 ### TypeScript 오류
+
 ```bash
 # 타입 체크 실행
 bun lint:ts
@@ -393,20 +444,44 @@ bun generate:types
 ```
 
 ### 개발 환경 문제
+
 ```bash
 # 전체 환경 체크
 bun scripts/dev-check.ts
 ```
 
+### NextAuth AdapterError 오류
+
+Google OAuth 로그인 시 AdapterError가 발생하는 경우:
+
+```bash
+# 1. 데이터베이스 연결 테스트
+bun scripts/test-db-connection.ts
+
+# 2. 테이블이 없다면 SQL 실행
+# Supabase Dashboard > SQL Editor에서 다음 실행:
+# scripts/fix-auth-final.sql 파일 내용
+
+# 3. 브라우저 쿠키 삭제 후 재시도
+```
+
+**주의사항**:
+- `@auth/supabase-adapter`는 `public` 스키마만 지원합니다
+- NextAuth 테이블은 반드시 `public` 스키마에 생성되어야 합니다
+- 자세한 해결 방법은 `NEXTAUTH_FIX_GUIDE.md` 참조
+
 ## 🚀 프로덕션 배포
 
 ### Vercel 배포 (추천)
+
 1. [Vercel](https://vercel.com)에서 프로젝트 Import
 2. 환경 변수 설정
 3. 배포!
 
 ### 환경 변수 체크리스트
+
 프로덕션에서 필요한 모든 환경 변수:
+
 - [ ] Supabase 자격 증명 (4개)
 - [ ] 이메일 서버 설정 (5개)
 - [ ] Google OAuth 자격 증명 (3개)

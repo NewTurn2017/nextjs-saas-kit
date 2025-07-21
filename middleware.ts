@@ -3,7 +3,7 @@ import NextAuth from "next-auth"
 import { NextResponse } from "next/server"
 
 export const config = {
-	matcher: ["/app"],
+	matcher: ["/app/:path*"],
 };
 
 const { auth } = NextAuth(authConfig)

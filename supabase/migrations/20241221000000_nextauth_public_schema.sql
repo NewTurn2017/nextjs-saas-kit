@@ -1,9 +1,9 @@
 --
 -- NextAuth.js Supabase Adapter Setup
--- Note: SupabaseAdapter only works with public schema
+-- IMPORTANT: SupabaseAdapter only works with public schema
 --
 
--- Create users table
+-- Create users table in public schema
 CREATE TABLE IF NOT EXISTS public.users (
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     name text,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     CONSTRAINT email_unique UNIQUE (email)
 );
 
--- Create accounts table
+-- Create accounts table in public schema
 CREATE TABLE IF NOT EXISTS public.accounts (
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     type text NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS public.accounts (
         ON DELETE CASCADE
 );
 
--- Create sessions table
+-- Create sessions table in public schema
 CREATE TABLE IF NOT EXISTS public.sessions (
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     expires timestamp with time zone NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS public.sessions (
         ON DELETE CASCADE
 );
 
--- Create verification_tokens table
+-- Create verification_tokens table in public schema
 CREATE TABLE IF NOT EXISTS public.verification_tokens (
     identifier text,
     token text,
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS public.verification_tokens (
     CONSTRAINT token_identifier_unique UNIQUE (token, identifier)
 );
 
--- Grant permissions
+-- Grant permissions to service_role
 GRANT ALL ON public.users TO service_role;
 GRANT ALL ON public.accounts TO service_role;
 GRANT ALL ON public.sessions TO service_role;
@@ -88,21 +88,3 @@ CREATE POLICY "Can view own user data." ON public.users
     
 CREATE POLICY "Can update own user data." ON public.users 
     FOR UPDATE USING (public.uid() = id);
-
---
--- Additional tables can be added here
---
--- Example structure for your own tables:
--- create table your_table (
---   id uuid not null default uuid_generate_v4() primary key,
---   created_at timestamp with time zone not null default now(),
---   updated_at timestamp with time zone not null default now(),
---   user_id uuid not null references public.users(id) on delete cascade,
---   -- your columns here
--- );
---
--- Don't forget to:
--- 1. Enable RLS: alter table your_table enable row level security;
--- 2. Create policies for CRUD operations
--- 3. Add foreign key constraints if needed
--- 4. Create indexes for frequently queried columns

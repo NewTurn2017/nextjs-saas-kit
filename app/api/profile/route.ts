@@ -1,16 +1,19 @@
 import { NextResponse } from 'next/server';
-import { getSupabaseClient } from '@/utils/supabase/server';
+import { createSupabaseAdminClient } from '@/utils/supabase/server';
 import { auth } from "@/lib/auth";
 
 export async function GET() {
 	try {
-		const supabase = await getSupabaseClient();
 		const session = await auth();
-
+		
+		// Check if user is authenticated
 		const userId = session?.user?.id;
 		if (!userId) {
 			return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
 		}
+
+		// Use admin client for API routes
+		const supabase = createSupabaseAdminClient();
 
 		// Get user data
 		const { data: userData, error: userError } = await supabase

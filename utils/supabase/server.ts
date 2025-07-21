@@ -2,13 +2,38 @@ import { createClient } from '@supabase/supabase-js'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { Database } from '@/types/database.types'
+
+// For server components that need user-specific access
 const getSupabaseClient = async () => {
 	const session = await auth()
 
 	if (!session?.supabaseAccessToken) {
+		// Only use redirect in server components, not API routes
 		redirect('/')
 	}
-	// 如何 使用 session.supabaseAccessToken 来创建 supabase client
+	
+	// Use session.supabaseAccessToken to create supabase client
+	return createClient<Database>(
+		process.env.NEXT_PUBLIC_SUPABASE_URL!,
+		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+		{
+			global: {
+				headers: {
+					Authorization: `Bearer ${session.supabaseAccessToken}`,
+				},
+			},
+		}
+	)
+}
+
+// For API routes - returns null if no session
+const getSupabaseClientForApi = async () => {
+	const session = await auth()
+
+	if (!session?.supabaseAccessToken) {
+		return null
+	}
+	
 	return createClient<Database>(
 		process.env.NEXT_PUBLIC_SUPABASE_URL!,
 		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -30,4 +55,4 @@ function createSupabaseAdminClient() {
 
 	)
 }
-export { getSupabaseClient, createSupabaseAdminClient }
+export { getSupabaseClient, getSupabaseClientForApi, createSupabaseAdminClient }

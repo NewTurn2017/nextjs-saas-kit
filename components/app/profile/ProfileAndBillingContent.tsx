@@ -28,9 +28,18 @@ export default function ProfileAndBillingContent() {
 		async function fetchProfileData() {
 			try {
 				const response = await fetch('/api/profile');
+				
+				// Handle 401 Unauthorized (user not logged in)
+				if (response.status === 401) {
+					// Redirect to home page
+					window.location.href = '/';
+					return;
+				}
+				
 				if (!response.ok) {
 					throw new Error('Failed to fetch profile data');
 				}
+				
 				const data = await response.json();
 				setProfileData(data);
 			} catch (err) {

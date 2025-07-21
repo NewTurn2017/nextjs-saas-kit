@@ -10,7 +10,14 @@
       "Bash(git push:*)",
       "Bash(gh repo view:*)",
       "Bash(rm:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(bun scripts/test-db-connection.ts:*)",
+      "mcp__sequential-thinking__sequentialthinking",
+      "Bash(grep:*)",
+      "mcp__supabase__execute_sql",
+      "Bash(bun scripts/test-adapter-connection.ts:*)",
+      "Bash(bun scripts/check-jwt.ts:*)",
+      "Bash(bun scripts/cleanup-test-users.ts:*)"
     ],
     "deny": []
   }

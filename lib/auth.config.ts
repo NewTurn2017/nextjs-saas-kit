@@ -1,6 +1,7 @@
 import NextAuth, { NextAuthConfig } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
-import { SupabaseAdapter } from "@auth/supabase-adapter"
+// Use our patched adapter that supports public schema
+import { SupabaseAdapter } from "./supabase-adapter-patch"
 import Resend from "next-auth/providers/resend"
 import { sendVerificationRequest } from "@/lib/authSendRequest"
 import config from "@/config"
@@ -8,6 +9,18 @@ import config from "@/config"
 
 const authConfig = {
 	secret: process.env.AUTH_SECRET,
+	debug: true, // Enable debug mode to see detailed errors
+	cookies: {
+		pkceCodeVerifier: {
+			name: 'next-auth.pkce.code_verifier',
+			options: {
+				httpOnly: true,
+				sameSite: 'lax',
+				path: '/',
+				secure: process.env.NODE_ENV === 'production',
+			},
+		},
+	},
 	providers: [
 		GoogleProvider({
 			allowDangerousEmailAccountLinking: true,
@@ -25,6 +38,7 @@ const authConfig = {
 			})
 		] : []),
 	],
+	// Use our patched adapter that supports public schema
 	adapter: SupabaseAdapter({
 		url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
 		secret: process.env.SUPABASE_SECRET_KEY!,
