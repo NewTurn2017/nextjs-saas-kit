@@ -1,0 +1,103 @@
+---
+# Specify the following for Cursor rules
+description: Guidelines for writing Postgres Create new Table SQL
+globs: "**/*.sql"
+---
+
+# Database: Create  New Tables
+## Tables
+
+- Avoid prefixes like 'tbl_' and ensure no table name matches any of its column names.
+- Always add an `id` column of type `identity generated always` unless otherwise specified.
+- Create all tables in the `public` schema unless otherwise specified.
+- Always add the schema to SQL queries for clarity.
+- Always add a comment to describe what the table does. The comment can be up to 1024 characters.
+- save the create table sql to /supabase/xxx_table_{date}.sql date format yyyy-mm-ddThh
+
+## Columns
+
+- Use singular names and avoid generic names like 'id'.
+- For references to foreign tables, use the singular of the table name with the `_id` suffix. For example `user_id` to reference the `users` table
+- Always use lowercase except in cases involving acronyms or when readability would be enhanced by an exception.
+
+#### Examples:
+
+```sql
+create table notes(
+  id serial primary key,
+  title text not null,
+  content text NOT NULL,
+  user_id uuid not null default next_auth.uid()
+);
+```
+
+## Authenticated and unauthenticated roles
+
+Supabase maps every request to one of the roles:
+
+- `anon`: an unauthenticated request (the user is not logged in)
+- `authenticated`: an authenticated request (the user is logged in)
+  
+Use this function to implement RLS control for user access to data.
+```sql
+--- uid() function to be used in RLS policies
+CREATE FUNCTION next_auth.uid() RETURNS uuid
+    LANGUAGE sql STABLE
+    AS $$
+  select
+  	coalesce(
+		nullif(current_setting('request.jwt.claim.sub', true), ''),
+		(nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')
+	)::uuid
+$$;
+```
+### Correct example
+
+```sql
+
+create table notes(
+  id serial primary key,
+  title text not null,
+  content text NOT NULL,
+  user_id uuid not null default next_auth.uid()
+);
+
+-- This policy will enforce that only notes where the `user_id` matches the Clerk user ID are returned.
+CREATE POLICY "Select notes policy" ON "public"."notes" AS PERMISSIVE FOR
+SELECT
+  TO authenticated USING (next_auth.uid() = user_id);
+
+-- This policy will enforce the user_id field on INSERT statements matches the Clerk user ID.
+CREATE POLICY "Insert notes policy" ON "public"."notes" AS PERMISSIVE FOR INSERT TO authenticated
+WITH
+  CHECK (next_auth.uid() = user_id);
+
+-- This policy will enforce that only notes where the `user_id` matches the Clerk user ID can be updated.
+CREATE POLICY "Update notes policy" ON "public"."notes" AS PERMISSIVE
+FOR UPDATE
+  TO authenticated USING (next_auth.uid() = user_id);
+
+-- This policy will enforce that only notes where the `user_id` matches the Clerk user ID can be deleted.
+CREATE POLICY "Delete notes policy" ON "public"."notes" AS PERMISSIVE FOR DELETE TO authenticated USING (next_auth.uid() = user_id);
+create table public.stripe_customers (
+    id uuid not null default uuid_generate_v4 (),
+    user_id uuid not null default next_auth.uid(),
+    stripe_customer_id text not null,
+    plan_active boolean not null default false,
+    plan_expires bigint null,
+    subscription_id text null,
+    constraint stripe_customers_pkey primary key (id),
+    constraint stripe_customers_stripe_customer_id_key unique (stripe_customer_id)
+  );
+
+alter table public.stripe_customers enable row level security;
+
+CREATE POLICY "stripe_customers can read their own data"
+  ON public.stripe_customers
+  FOR SELECT
+  USING (next_auth.uid() = user_id);
+```
+
+
+## Default tables exsit in database
+The notes and stripe_customers tables already exist in the database. If you need to create an associated table, you should refer to the SQL statement above.

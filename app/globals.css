@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* --background: #F9F8F6; */
+  --background: #ffffff;
+  --foreground: #0A0A0A;
+  --primary: #5059FE;
+  --primary-hover: #4048ed;
+  --border: #E5E7EB;
+  --border-hover: #D1D5DB;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+button:active,
+a[role="button"]:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(80, 89, 254, 0.1);
+}
+
+/* Input and Textarea Focus Effects */
+input:focus,
+textarea:focus {
+  transition: all 0.2s ease;
+  box-shadow: 0 0 0 3px rgba(80, 89, 254, 0.1);
+  border-color: var(--primary);
+}
+
+/* Card Hover Effects */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Link Hover Effects */
+.link-hover {
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.link-hover::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--primary);
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease;
+}
+
+.link-hover:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
