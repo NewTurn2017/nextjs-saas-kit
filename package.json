@@ -8,7 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "email": "email dev",
-    "lint:ts": "tsc --noEmit"
+    "lint:ts": "tsc --noEmit",
+    "check-env": "bun scripts/check-env.ts",
+    "setup": "bun scripts/dev-check.ts && bun check-env",
+    "setup:db": "bun scripts/setup-database.ts",
+    "generate:types": "bun scripts/generate-types.ts",
+    "predev": "bun scripts/dev-check.ts"
   },
   "dependencies": {
     "@auth/supabase-adapter": "^1.7.4",
@@ -28,7 +33,8 @@
     "react-dom": "^19.0.0",
     "react-email": "^3.0.7",
     "react-hot-toast": "^2.5.2",
-    "tailwind-merge": "^3.0.1"
+    "tailwind-merge": "^3.0.1",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

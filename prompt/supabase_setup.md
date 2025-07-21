@@ -134,30 +134,19 @@ create trigger on_auth_user_created
   for each row execute procedure public.handle_new_user();
 
 --
--- SET EXAMPLE NOTE DATA TABLE FOR TEMPLATE DATA
+-- Additional tables can be added here
 --
-
-create table notes(
-  id serial primary key,
-  title text not null,
-  content text NOT NULL,
-  user_id uuid not null default next_auth.uid()
-);
-
--- This policy will enforce that only notes where the `user_id` matches the Clerk user ID are returned.
-CREATE POLICY "Select notes policy" ON "public"."notes" AS PERMISSIVE FOR
-SELECT
-  TO authenticated USING (next_auth.uid() = user_id);
-
--- This policy will enforce the user_id field on INSERT statements matches the Clerk user ID.
-CREATE POLICY "Insert notes policy" ON "public"."notes" AS PERMISSIVE FOR INSERT TO authenticated
-WITH
-  CHECK (next_auth.uid() = user_id);
-
--- This policy will enforce that only notes where the `user_id` matches the Clerk user ID can be updated.
-CREATE POLICY "Update notes policy" ON "public"."notes" AS PERMISSIVE
-FOR UPDATE
-  TO authenticated USING (next_auth.uid() = user_id);
-
--- This policy will enforce that only notes where the `user_id` matches the Clerk user ID can be deleted.
-CREATE POLICY "Delete notes policy" ON "public"."notes" AS PERMISSIVE FOR DELETE TO authenticated USING (next_auth.uid() = user_id);
+-- Example structure for your own tables:
+-- create table your_table (
+--   id uuid not null default uuid_generate_v4() primary key,
+--   created_at timestamp with time zone not null default now(),
+--   updated_at timestamp with time zone not null default now(),
+--   user_id uuid not null default next_auth.uid(),
+--   -- your columns here
+-- );
+--
+-- Don't forget to:
+-- 1. Enable RLS: alter table your_table enable row level security;
+-- 2. Create policies for CRUD operations
+-- 3. Add foreign key constraints if needed
+-- 4. Create indexes for frequently queried columns

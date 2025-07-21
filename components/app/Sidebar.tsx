@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Home, Users, Settings, UserCircle, CreditCard, LayoutDashboard } from "lucide-react"
+import { Home, UserCircle, LayoutDashboard, Settings } from "lucide-react"
 
 export function Sidebar() {
   return (
@@ -17,14 +17,7 @@ export function Sidebar() {
           className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white"
         >
           <LayoutDashboard className="inline-block mr-2" size={20} />
-          App
-        </Link>
-        <Link
-          href="/app/notes"
-          className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white"
-        >
-          <Users className="inline-block mr-2" size={20} />
-          Notes
+          Dashboard
         </Link>
         <Link
           href="/app/profile"
@@ -34,11 +27,11 @@ export function Sidebar() {
           Profile
         </Link>
         <Link
-          href="/app/billing"
+          href="/app/settings"
           className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white"
         >
-          <CreditCard className="inline-block mr-2" size={20} />
-          Billing
+          <Settings className="inline-block mr-2" size={20} />
+          Settings
         </Link>
       </nav>
     </div>
