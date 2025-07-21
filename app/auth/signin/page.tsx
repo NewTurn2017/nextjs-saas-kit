@@ -8,12 +8,14 @@ import { useSearchParams } from 'next/navigation'
 export default function SignInPage() {
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isEmailSent, setIsEmailSent] = useState(false)
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/app'
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setIsEmailSent(false)
     try {
       await signIn('resend', { 
         email,
@@ -21,7 +23,9 @@ export default function SignInPage() {
         redirect: false 
       })
       // Show success message
-      alert('Check your email for the sign-in link!')
+      setIsEmailSent(true)
+      // Clear email field
+      setEmail('')
     } catch (error) {
       console.error('Sign in error:', error)
     } finally {
@@ -57,6 +61,26 @@ export default function SignInPage() {
 
         {/* Sign In Card */}
         <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-8">
+          {/* Success Message */}
+          {isEmailSent && (
+            <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div className="flex-1">
+                  <h3 className="text-sm font-medium text-green-400">Check your email!</h3>
+                  <p className="text-sm text-gray-300 mt-1">
+                    We've sent a magic link to <span className="font-medium">{email}</span>
+                  </p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    Click the link in your email to sign in. The link expires in 24 hours.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Google Sign In */}
           <button
             onClick={handleGoogleSignIn}
