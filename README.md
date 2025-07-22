@@ -78,6 +78,8 @@ cp .env.example .env.local
 
 ### 5. NextAuth Secret 생성
 
+https://generate-secret.vercel.app/ 에서 생성
+
 ```bash
 # 터미널에서 실행
 openssl rand -base64 32
