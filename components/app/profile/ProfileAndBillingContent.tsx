@@ -216,7 +216,7 @@ export default function ProfileAndBillingContent() {
 	}
 
 	const { userData, profile } = profileData;
-	const avatarUrl = profile?.avatar_url || userData?.image;
+	const avatarUrl = profile?.avatar_url || userData?.image || null;
 
 	return (
 		<>
@@ -244,7 +244,7 @@ export default function ProfileAndBillingContent() {
 					<div className="flex items-center space-x-6">
 						<div className="relative group">
 							<Avatar className="w-24 h-24 border-4 border-[#5059FE]/20 shadow-lg">
-								<AvatarImage src={avatarUrl || ''} alt="Profile" />
+								{avatarUrl && <AvatarImage src={avatarUrl} alt="Profile" />}
 								<AvatarFallback className="bg-gradient-to-br from-[#5059FE] to-[#7D65F6]">
 									<User className="w-12 h-12 text-white" />
 								</AvatarFallback>
