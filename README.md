@@ -535,3 +535,7 @@ Google OAuth 로그인이 작동하지 않는 경우:
 ## 📞 지원
 
 질문이나 문제가 있으면 [이슈](https://github.com/NewTurn2017/nextjs-saas-kit/issues)를 열어주세요.
+
+---
+
+Made with ❤️ by [Developer Genie](https://www.threads.com/@ai_developer_genie) for the community
