@@ -1,25 +1,25 @@
-"use client";
+'use client'
 
-import { Menu, X } from "lucide-react"
-import UserMenu from "@/components/user/UserMenu"
-import Link from "next/link"
-import { useState } from "react"
+import { Menu, X } from 'lucide-react'
+import UserMenu from '@/components/user/UserMenu'
+import Link from 'next/link'
+import { useState } from 'react'
 
 export function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
     <header className="bg-white shadow-md py-4 px-4 border-b border-gray-200">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <Link href="/app/">
+          <Link href="/">
             <h1 className="text-xl font-semibold">App</h1>
           </Link>
         </div>
         <div className="flex items-center gap-4">
           <UserMenu />
-          <button 
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-all duration-200 shadow-sm hover:shadow-md" 
+          <button
+            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-all duration-200 shadow-sm hover:shadow-md"
             aria-label="Open menu"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
@@ -42,4 +42,3 @@ export function Header() {
     </header>
   )
 }
-

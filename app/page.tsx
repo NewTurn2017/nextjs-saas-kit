@@ -1,13 +1,13 @@
-import Link from "next/link";
-import SignIn from "@/components/sign-in";
-import UserMenu from "@/components/user/UserMenu";
+import Link from 'next/link'
+import SignIn from '@/components/sign-in'
+import UserMenu from '@/components/user/UserMenu'
 
-import config from "@/config";
-import { auth } from "@/lib/auth";
+import config from '@/config'
+import { auth } from '@/lib/auth'
 
 export default async function Home() {
-  const session = await auth();
-  const user = session?.user;
+  const session = await auth()
+  const user = session?.user
   return (
     <div className="flex flex-col">
       {/* Navigation Menu */}
@@ -24,7 +24,10 @@ export default async function Home() {
                   Home
                 </Link>
                 {user && (
-                  <Link href="/app/" className="text-lg text-gray-600 hover:text-gray-900 link-hover">
+                  <Link
+                    href="/app/"
+                    className="text-lg text-gray-600 hover:text-gray-900 link-hover"
+                  >
                     App
                   </Link>
                 )}
@@ -55,12 +58,11 @@ export default async function Home() {
 
           <div className="flex flex-col gap-4 items-center">
             {!user ? (
-              <>
-              </>
+              <></>
             ) : (
               <Link
-                href="/app/"
-                className="inline-flex items-center gap-2 bg-white border border-gray-300 text-gray-800 hover:bg-[var(--background)] hover:border-gray-400 font-semibold py-2.5 px-6 rounded-full "
+                href="/app"
+                className="inline-flex items-cejnter gap-2 bg-white border border-gray-300 text-gray-800 hover:bg-[var(--background)] hover:border-gray-400 font-semibold py-2.5 px-6 rounded-full "
               >
                 Go to App
               </Link>
@@ -68,7 +70,6 @@ export default async function Home() {
           </div>
         </div>
       </div>
-
     </div>
-  );
+  )
 }

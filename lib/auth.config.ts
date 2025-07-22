@@ -1,10 +1,7 @@
-import NextAuth, { NextAuthConfig } from "next-auth"
+import { NextAuthConfig } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 // Use our custom adapter that supports public schema
 import { SupabaseAdapter } from "./auth/supabase-adapter"
-import Resend from "next-auth/providers/resend"
-import Nodemailer from "next-auth/providers/nodemailer"
-import { sendVerificationRequest, html, text } from "@/lib/authSendRequest"
 import config from "@/config"
 //read https://github.com/nextauthjs/next-auth/issues/8357O
 
@@ -33,55 +30,49 @@ const authConfig = {
 			clientId: process.env.AUTH_GOOGLE_ID!,
 			clientSecret: process.env.AUTH_GOOGLE_SECRET!,
 		}),
-		...(config.emailProvider === "resend" ? [
-			Resend({
-				apiKey: process.env.AUTH_RESEND_KEY,
-				from: process.env.EMAIL_FROM,
-				sendVerificationRequest: async function ({ identifier: email, url, provider, theme }) {
-					//@ts-ignore - Ignoring type check here as sendVerificationRequest expects slightly different parameter structure than what Next-Auth provides
-					sendVerificationRequest({ identifier: email, url, provider, theme })
-				}
-			})
-		] : config.emailProvider === "nodemailer" ? [
-			Nodemailer({
-				server: {
-					host: process.env.EMAIL_SERVER_HOST,
-					port: Number(process.env.EMAIL_SERVER_PORT),
-					auth: {
-						user: process.env.EMAIL_SERVER_USER,
-						pass: process.env.EMAIL_SERVER_PASSWORD
-					}
-				},
-				from: process.env.EMAIL_FROM,
-				sendVerificationRequest: async function ({ identifier: email, url, provider }) {
-					const { host } = new URL(url)
-					const transport = require("nodemailer").createTransport(provider.server)
-					await transport.sendMail({
-						to: email,
-						from: provider.from,
-						subject: `Sign in to ${config.metadata.title}`,
-						text: text({ url, host }),
-						html: html({ url, host, theme: { brandColor: config.theme.colors.primary } }),
-					})
-				}
-			})
-		] : []),
+		// Email providers are added in auth.ts to avoid Edge runtime issues
 	],
 	// Use our custom adapter that supports public schema
 	adapter: SupabaseAdapter({
 		url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
 		secret: process.env.SUPABASE_SECRET_KEY!,
 	}),
+	session: {
+		strategy: "jwt",
+		maxAge: 30 * 24 * 60 * 60, // 30 days
+	},
+	jwt: {
+		maxAge: 30 * 24 * 60 * 60, // 30 days
+	},
 	callbacks: {
-		async session({ session, user }) {
-			const signingSecret = process.env.SUPABASE_JWT_SECRET
+		async jwt({ token, user, account }) {
+			// Initial sign in
+			if (account && user) {
+				return {
+					...token,
+					accessToken: account.access_token,
+					refreshToken: account.refresh_token,
+					userId: user.id,
+				}
+			}
 
+			return token
+		},
+		async session({ session, token }) {
+			// Send properties to the client
+			session.user = {
+				...session.user,
+				id: token.userId as string,
+			}
+
+			// Create Supabase JWT if secret is available
+			const signingSecret = process.env.SUPABASE_JWT_SECRET
 			if (signingSecret) {
 				const payload = {
 					aud: "authenticated",
 					exp: Math.floor(new Date(session.expires).getTime() / 1000),
-					sub: user.id,
-					email: user.email,
+					sub: token.userId as string,
+					email: token.email,
 					role: "authenticated",
 				}
 
@@ -91,11 +82,10 @@ const authConfig = {
 					.setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
 					.sign(secretKey)
 			}
+
 			return session
 		},
 	},
 } satisfies NextAuthConfig
-
-export const { auth } = NextAuth(authConfig)
 
 export default authConfig

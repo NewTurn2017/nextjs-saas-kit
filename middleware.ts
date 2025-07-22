@@ -1,16 +1,18 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { getToken } from "next-auth/jwt"
+import { auth } from "@/lib/auth-edge"
 
 export const config = {
 	matcher: ["/app/:path*"],
 };
 
 export async function middleware(request: NextRequest) {
-	const token = await getToken({ req: request })
+	const session = await auth()
 
-	if (!token) {
-		return NextResponse.redirect(new URL("/auth/signin", request.url));
+	if (!session) {
+		const signInUrl = new URL("/auth/signin", request.url)
+		signInUrl.searchParams.set("callbackUrl", request.url)
+		return NextResponse.redirect(signInUrl)
 	}
 
 	return NextResponse.next()
