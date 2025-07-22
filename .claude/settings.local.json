@@ -20,7 +20,9 @@
       "Bash(bun scripts/cleanup-test-users.ts:*)",
       "mcp__supabase__list_projects",
       "mcp__supabase__apply_migration",
-      "mcp__context7__resolve-library-id"
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "mcp__brave-search__brave_web_search"
     ],
     "deny": []
   }

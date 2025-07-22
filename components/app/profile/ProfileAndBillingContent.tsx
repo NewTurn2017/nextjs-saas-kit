@@ -4,7 +4,11 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Pencil, Upload, X, Save, User } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
-import { ToastContainer } from '@/components/ui/Toast';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Label } from '@/components/ui/label';
 
 // Animation variants
 const fadeIn = {
@@ -31,7 +35,7 @@ export default function ProfileAndBillingContent() {
 	const [isSavingName, setIsSavingName] = useState(false);
 	const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const { toasts, success, error: showError, removeToast } = useToast();
+	const { success, error: showError } = useToast();
 
 	useEffect(() => {
 		async function fetchProfileData() {
@@ -95,6 +99,8 @@ export default function ProfileAndBillingContent() {
 			}));
 			setIsEditingName(false);
 			success('이름이 성공적으로 변경되었습니다');
+			// Emit event to update UserMenu
+			window.dispatchEvent(new Event('profileUpdated'));
 		} catch (err) {
 			console.error('Error updating name:', err);
 			showError(err.message || '이름 업데이트에 실패했습니다');
@@ -131,6 +137,8 @@ export default function ProfileAndBillingContent() {
 				}
 			}));
 			success('프로필 사진이 업로드되었습니다');
+			// Emit event to update UserMenu
+			window.dispatchEvent(new Event('profileUpdated'));
 		} catch (err) {
 			console.error('Error uploading avatar:', err);
 			showError(err.message || '프로필 사진 업로드에 실패했습니다');
@@ -163,6 +171,8 @@ export default function ProfileAndBillingContent() {
 				}
 			}));
 			success('프로필 사진이 삭제되었습니다');
+			// Emit event to update UserMenu
+			window.dispatchEvent(new Event('profileUpdated'));
 		} catch (err) {
 			console.error('Error deleting avatar:', err);
 			showError('프로필 사진 삭제에 실패했습니다');
@@ -217,56 +227,52 @@ export default function ProfileAndBillingContent() {
 			variants={staggerContainer}
 		>
 			{/* User Information */}
-			<motion.div 
-				className="bg-[var(--background)] shadow-lg rounded-xl p-8 border border-[var(--border)] hover:shadow-xl transition-shadow duration-300"
-				variants={fadeIn}
-			>
-				<div className="flex items-center mb-6">
-					<div className="bg-gradient-to-r from-[#5059FE] to-[#7D65F6] p-2 rounded-lg mr-4">
-						<svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-						</svg>
-					</div>
-					<h2 className="text-xl font-bold">사용자 정보</h2>
-				</div>
+			<motion.div variants={fadeIn}>
+				<Card className="hover:shadow-xl transition-shadow duration-300">
+					<CardHeader>
+						<div className="flex items-center">
+							<div className="bg-gradient-to-r from-[#5059FE] to-[#7D65F6] p-2 rounded-lg mr-4">
+								<User className="h-6 w-6 text-white" />
+							</div>
+							<CardTitle className="text-xl">사용자 정보</CardTitle>
+						</div>
+					</CardHeader>
+					<CardContent className="space-y-6">
 				
 				<div className="space-y-6">
 					{/* Profile Picture Section */}
 					<div className="flex items-center space-x-6">
 						<div className="relative group">
-							<div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border-4 border-[#5059FE]/20 shadow-lg">
-								{avatarUrl ? (
-									<img
-										src={avatarUrl}
-										alt="Profile"
-										className="w-full h-full object-cover"
-									/>
-								) : (
-									<div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#5059FE] to-[#7D65F6]">
-										<User className="w-12 h-12 text-white" />
-									</div>
-								)}
-							</div>
+							<Avatar className="w-24 h-24 border-4 border-[#5059FE]/20 shadow-lg">
+								<AvatarImage src={avatarUrl || ''} alt="Profile" />
+								<AvatarFallback className="bg-gradient-to-br from-[#5059FE] to-[#7D65F6]">
+									<User className="w-12 h-12 text-white" />
+								</AvatarFallback>
+							</Avatar>
 							
 							{/* Upload/Delete overlay */}
 							<div className="absolute inset-0 w-24 h-24 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-								<button
+								<Button
 									onClick={() => fileInputRef.current?.click()}
 									disabled={isUploadingAvatar}
-									className="text-white hover:text-gray-200 transition-colors disabled:opacity-50"
+									variant="ghost"
+									size="icon"
+									className="text-white hover:text-gray-200 hover:bg-transparent"
 									title="프로필 사진 변경"
 								>
 									<Upload className="w-6 h-6" />
-								</button>
+								</Button>
 								{avatarUrl && (
-									<button
+									<Button
 										onClick={handleDeleteAvatar}
 										disabled={isUploadingAvatar}
-										className="text-white hover:text-red-300 transition-colors ml-2 disabled:opacity-50"
+										variant="ghost"
+										size="icon"
+										className="text-white hover:text-red-300 hover:bg-transparent ml-2"
 										title="프로필 사진 삭제"
 									>
 										<X className="w-6 h-6" />
-									</button>
+									</Button>
 								)}
 							</div>
 						</div>
@@ -293,47 +299,52 @@ export default function ProfileAndBillingContent() {
 					{/* Name Section */}
 					<div className="bg-[var(--background-subtle)] p-4 rounded-lg">
 						<div className="flex items-center justify-between">
-							<label className="text-sm font-medium text-gray-500">이름</label>
+							<Label className="text-sm font-medium text-gray-500">이름</Label>
 							{!isEditingName && (
-								<button
+								<Button
 									onClick={() => setIsEditingName(true)}
-									className="text-[#5059FE] hover:text-[#7D65F6] transition-colors"
+									variant="ghost"
+									size="icon"
+									className="h-8 w-8 text-[#5059FE] hover:text-[#7D65F6]"
 									title="이름 수정"
 								>
 									<Pencil className="w-4 h-4" />
-								</button>
+								</Button>
 							)}
 						</div>
 						
 						{isEditingName ? (
 							<div className="flex items-center mt-1 space-x-2">
-								<input
+								<Input
 									type="text"
 									value={name}
 									onChange={(e) => setName(e.target.value)}
-									className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5059FE] focus:border-transparent"
+									className="flex-1 focus:ring-[#5059FE]"
 									placeholder="이름을 입력하세요"
 									disabled={isSavingName}
 								/>
-								<button
+								<Button
 									onClick={handleSaveName}
 									disabled={isSavingName}
-									className="p-2 bg-[#5059FE] text-white rounded-lg hover:bg-[#7D65F6] transition-colors disabled:opacity-50"
+									size="icon"
+									className="h-10 w-10 bg-[#5059FE] hover:bg-[#7D65F6]"
 									title="저장"
 								>
 									<Save className="w-4 h-4" />
-								</button>
-								<button
+								</Button>
+								<Button
 									onClick={() => {
 										setIsEditingName(false);
 										setName(profile?.name || userData?.name || '');
 									}}
 									disabled={isSavingName}
-									className="p-2 text-gray-500 hover:text-gray-700 transition-colors disabled:opacity-50"
+									variant="ghost"
+									size="icon"
+									className="h-10 w-10"
 									title="취소"
 								>
 									<X className="w-4 h-4" />
-								</button>
+								</Button>
 							</div>
 						) : (
 							<p className="font-semibold text-lg mt-1">
@@ -344,15 +355,15 @@ export default function ProfileAndBillingContent() {
 
 					{/* Email Section */}
 					<div className="bg-[var(--background-subtle)] p-4 rounded-lg">
-						<label className="text-sm font-medium text-gray-500">이메일</label>
+						<Label className="text-sm font-medium text-gray-500">이메일</Label>
 						<p className="font-semibold text-lg mt-1 break-all">{userData.email}</p>
 					</div>
 				</div>
+					</CardContent>
+				</Card>
 			</motion.div>
 
 		</motion.div>
-
-		<ToastContainer toasts={toasts} onClose={removeToast} />
 	</>
 	);
 }

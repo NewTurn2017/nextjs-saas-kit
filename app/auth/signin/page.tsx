@@ -4,6 +4,11 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { toast } from 'sonner'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
@@ -68,7 +73,8 @@ export default function SignInPage() {
         </div>
 
         {/* Sign In Card */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 p-8">
+        <Card className="bg-white/80 backdrop-blur-xl shadow-2xl border-gray-200/50">
+          <CardContent className="p-8">
           {/* Success Message */}
           {isEmailSent && (
             <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
@@ -84,12 +90,13 @@ export default function SignInPage() {
                   <p className="text-xs text-gray-600 mt-2">
                     이메일의 링크를 클릭하여 로그인하세요. 링크는 24시간 후에 만료됩니다.
                   </p>
-                  <button
+                  <Button
                     onClick={() => setIsEmailSent(false)}
-                    className="text-xs text-blue-600 hover:text-blue-700 mt-3 inline-block"
+                    variant="link"
+                    className="text-xs h-auto p-0 mt-3"
                   >
                     받지 못하셨나요? 다시 시도하기
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -99,10 +106,12 @@ export default function SignInPage() {
           {!isEmailSent && (
             <>
               {/* Google Sign In */}
-              <button
+              <Button
                 onClick={handleGoogleSignIn}
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white hover:bg-gray-50 text-gray-800 font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed border border-gray-200"
+                variant="outline"
+                size="lg"
+                className="w-full"
               >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -111,7 +120,7 @@ export default function SignInPage() {
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
             {isLoading ? '로그인 중...' : 'Google로 계속하기'}
-          </button>
+          </Button>
 
           {/* Divider */}
           <div className="relative my-6">
@@ -127,27 +136,26 @@ export default function SignInPage() {
           <form onSubmit={handleEmailSignIn}>
             <div className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  이메일 주소
-                </label>
-                <input
+                <Label htmlFor="email">이메일 주소</Label>
+                <Input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   required
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="mt-2"
                 />
               </div>
               
-              <button
+              <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+                size="lg"
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
               >
                 {isLoading ? '매직 링크 전송 중...' : '매직 링크 보내기'}
-              </button>
+              </Button>
             </div>
           </form>
 
@@ -164,7 +172,8 @@ export default function SignInPage() {
               </p>
             </>
           )}
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Additional Options */}
         <div className="mt-8 text-center">

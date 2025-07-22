@@ -3,7 +3,7 @@ import config from "@/config";
 import "./globals.css";
 // Analytics imports removed - add them back when needed
 import { SessionProvider } from "next-auth/react"
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "@/components/ui/sonner";
 import FooterWrapper from "@/components/ui/FooterWrapper";
 
 export const metadata: Metadata = config.metadata;
@@ -19,7 +19,7 @@ export default function RootLayout({
         <body
           className="antialiased h-screen flex flex-col overflow-hidden"
         >
-          <Toaster position="top-center" />
+          <Toaster position="top-center" richColors />
           <main className="flex-1 overflow-auto">
             {children}
           </main>
