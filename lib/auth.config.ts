@@ -4,14 +4,14 @@ import GoogleProvider from "next-auth/providers/google"
 import { SupabaseAdapter } from "./auth/supabase-adapter"
 import Resend from "next-auth/providers/resend"
 import Nodemailer from "next-auth/providers/nodemailer"
-import { sendVerificationRequest } from "@/lib/authSendRequest"
+import { sendVerificationRequest, html, text } from "@/lib/authSendRequest"
 import config from "@/config"
 //read https://github.com/nextauthjs/next-auth/issues/8357O
 
 const authConfig = {
 	secret: process.env.AUTH_SECRET,
-	// Debug mode enabled to troubleshoot email issue
-	debug: true,
+	// Debug mode disabled for production
+	debug: process.env.NODE_ENV === 'development',
 	pages: {
 		signIn: '/auth/signin',
 		error: '/auth/error',
@@ -53,6 +53,17 @@ const authConfig = {
 					}
 				},
 				from: process.env.EMAIL_FROM,
+				sendVerificationRequest: async function ({ identifier: email, url, provider }) {
+					const { host } = new URL(url)
+					const transport = require("nodemailer").createTransport(provider.server)
+					await transport.sendMail({
+						to: email,
+						from: provider.from,
+						subject: `Sign in to ${config.metadata.title}`,
+						text: text({ url, host }),
+						html: html({ url, host, theme: { brandColor: config.theme.colors.primary } }),
+					})
+				}
 			})
 		] : []),
 	],
