@@ -165,6 +165,15 @@ Supabase 대시보드의 SQL Editor에서 다음 중 하나를 실행:
 - 프로필 이미지를 위한 Storage 버킷 (avatars)
 - 필요한 RLS (Row Level Security) 정책
 
+**중요**: SQL 스크립트가 Storage 버킷 생성에 실패하면 수동으로 생성해야 합니다:
+1. Supabase 대시보드에서 Storage 섹션으로 이동
+2. "New bucket" 클릭
+3. 다음 설정으로 생성:
+   - Name: `avatars`
+   - Public bucket: ✅ 체크
+   - File size limit: 5MB
+   - Allowed MIME types: `image/jpeg`, `image/jpg`, `image/png`, `image/webp`, `image/gif`
+
 ### 4. 개발 서버 실행
 
 ```bash
