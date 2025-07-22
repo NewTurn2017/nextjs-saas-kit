@@ -5,6 +5,7 @@ Next.js 15 + NextAuth v5 + Supabase로 만든 프로덕션 레디 SaaS 스타터
 ## 🚀 빠른 시작
 
 ### 필수 요구사항
+
 - Node.js 18+ 또는 [Bun](https://bun.sh)
 - [Supabase](https://supabase.com) 계정
 - Gmail 계정
@@ -34,6 +35,7 @@ cp .env.example .env.local
    - Settings > Database > Connection string > URI (비밀번호 부분) → `SUPABASE_JWT_SECRET`
 
    **⚠️ 중요**: 환경변수 값에 따옴표를 넣지 마세요!
+
    ```
    ✅ 올바른 예: NEXT_PUBLIC_SUPABASE_URL=https://abc.supabase.co
    ❌ 잘못된 예: NEXT_PUBLIC_SUPABASE_URL="https://abc.supabase.co"
@@ -82,6 +84,7 @@ openssl rand -base64 32
 ```
 
 생성된 값을 `.env.local`에 추가:
+
 ```
 AUTH_SECRET=생성된_랜덤_문자열
 ```
@@ -126,7 +129,9 @@ NEXT_PUBLIC_APP_URL=https://your-domain.com
 ## 🚨 문제 해결
 
 ### Storage 버킷 수동 생성
+
 SQL 스크립트가 Storage 버킷 생성에 실패하면:
+
 1. Supabase 대시보드 > Storage
 2. "New bucket" 클릭
 3. 설정:
@@ -136,25 +141,10 @@ SQL 스크립트가 Storage 버킷 생성에 실패하면:
    - Allowed MIME types: `image/jpeg`, `image/jpg`, `image/png`, `image/webp`, `image/gif`
 
 ### 일반적인 문제
+
 - **"Missing environment variables"**: `bun check-env` 실행하여 누락된 변수 확인
 - **Google OAuth 에러**: Authorized redirect URIs 확인
 - **이메일 전송 실패**: Gmail 앱 비밀번호 재생성
-
-### AdapterError 해결
-NextAuth AdapterError가 발생하면:
-1. **환경변수 확인**: 
-   - 모든 Supabase 환경변수가 올바르게 설정되었는지 확인
-   - 값에 따옴표가 없는지 확인
-2. **데이터베이스 설정 확인**:
-   - SQL 스크립트가 완전히 실행되었는지 확인
-   - Supabase 대시보드 > Table Editor에서 `users`, `accounts`, `sessions` 테이블 존재 확인
-3. **Service Role Key 확인**:
-   - `SUPABASE_SECRET_KEY`가 Service Role Key인지 확인 (Anon Key가 아님)
-4. **연결 테스트**:
-   ```bash
-   bun check-env
-   bun dev
-   ```
 
 ## 📚 주요 스크립트
 
