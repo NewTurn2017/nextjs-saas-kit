@@ -90,8 +90,20 @@ AUTH_SECRET=your_generated_auth_secret
 ```
 
 #### NextAuth Secret 생성 (필수)
+
+다음 중 하나의 방법을 사용하세요:
+
+**방법 1: 온라인 생성기 사용 (추천)**
+- https://generate-secret.vercel.app/32 접속
+- 생성된 키를 복사하여 `AUTH_SECRET`에 설정
+
+**방법 2: 터미널 명령어 사용**
 ```bash
+# macOS/Linux/Git Bash
 openssl rand -base64 32
+
+# Node.js가 설치되어 있다면
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
 #### Google OAuth 설정 (선택사항)
