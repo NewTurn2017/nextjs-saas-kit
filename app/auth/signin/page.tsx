@@ -18,16 +18,18 @@ export default function SignInPage() {
     setIsEmailSent(false)
     
     try {
-      const result = await signIn('resend', { 
+      const result = await signIn('nodemailer', { 
         email,
         callbackUrl,
         redirect: false 
       })
       
+      console.log('Sign in result:', result) // Debug log
+      
       if (result?.error) {
         console.error('Sign in error:', result.error)
         // You could set an error state here if needed
-      } else {
+      } else if (result?.ok) {
         // Show success message
         setIsEmailSent(true)
         // Don't clear email field immediately to show which email was used

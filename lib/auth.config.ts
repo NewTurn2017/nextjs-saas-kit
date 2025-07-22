@@ -3,14 +3,15 @@ import GoogleProvider from "next-auth/providers/google"
 // Use our custom adapter that supports public schema
 import { SupabaseAdapter } from "./auth/supabase-adapter"
 import Resend from "next-auth/providers/resend"
+import Nodemailer from "next-auth/providers/nodemailer"
 import { sendVerificationRequest } from "@/lib/authSendRequest"
 import config from "@/config"
 //read https://github.com/nextauthjs/next-auth/issues/8357O
 
 const authConfig = {
 	secret: process.env.AUTH_SECRET,
-	// Debug mode disabled for production
-	debug: process.env.NODE_ENV === 'development',
+	// Debug mode enabled to troubleshoot email issue
+	debug: true,
 	pages: {
 		signIn: '/auth/signin',
 		error: '/auth/error',
@@ -40,6 +41,18 @@ const authConfig = {
 					//@ts-ignore - Ignoring type check here as sendVerificationRequest expects slightly different parameter structure than what Next-Auth provides
 					sendVerificationRequest({ identifier: email, url, provider, theme })
 				}
+			})
+		] : config.emailProvider === "nodemailer" ? [
+			Nodemailer({
+				server: {
+					host: process.env.EMAIL_SERVER_HOST,
+					port: Number(process.env.EMAIL_SERVER_PORT),
+					auth: {
+						user: process.env.EMAIL_SERVER_USER,
+						pass: process.env.EMAIL_SERVER_PASSWORD
+					}
+				},
+				from: process.env.EMAIL_FROM,
 			})
 		] : []),
 	],

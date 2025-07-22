@@ -103,7 +103,7 @@ openssl rand -base64 32
    - `http://localhost:3000/api/auth/callback/google` (개발용)
    - `https://your-domain.com/api/auth/callback/google` (프로덕션용)
 
-#### Gmail 앱 비밀번호 설정 (이메일 인증 사용 시)
+#### Gmail 앱 비밀번호 설정 (이메일 매직 링크 사용 시)
 
 1. Gmail 앱 비밀번호 생성
 
