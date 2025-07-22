@@ -73,19 +73,19 @@ async function runChecks(): Promise<CheckResult[]> {
       : '❌ Dependencies not installed. Run: bun install'
   })
 
-  // Check 5: Git repository
+  // Check 5: Git repository (optional)
   try {
     execSync('git rev-parse --git-dir', { stdio: 'ignore' })
     results.push({
-      name: 'Git',
+      name: 'Git (optional)',
       passed: true,
       message: '✅ Git repository initialized'
     })
   } catch {
     results.push({
-      name: 'Git',
-      passed: false,
-      message: '⚠️  Not a git repository. Run: git init'
+      name: 'Git (optional)',
+      passed: true, // Mark as passed since it's optional
+      message: 'ℹ️  No git repository (optional)'
     })
   }
 
