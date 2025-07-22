@@ -51,12 +51,18 @@ cp .env.example .env.local
 
 1. [Google Cloud Console](https://console.cloud.google.com) 접속
 2. 새 프로젝트 생성 또는 기존 프로젝트 선택
-3. "APIs & Services" > "Credentials" > "Create Credentials" > "OAuth client ID"
-4. Application type: "Web application" 선택
-5. Authorized redirect URIs 추가:
+3. **OAuth 동의 화면 설정** (처음 한 번만):
+   - "APIs & Services" > "OAuth consent screen"
+   - User Type: "External" 선택
+   - 앱 정보 입력 (앱 이름, 이메일 등)
+   - 테스트 사용자 추가 (개발 중일 때)
+   - **"앱 게시" 버튼 클릭** (프로덕션 사용 시)
+4. "APIs & Services" > "Credentials" > "Create Credentials" > "OAuth client ID"
+5. Application type: "Web application" 선택
+6. Authorized redirect URIs 추가:
    - 개발: `http://localhost:3000/api/auth/callback/google`
    - 프로덕션: `https://your-domain.com/api/auth/callback/google`
-6. `.env.local`에 추가:
+7. `.env.local`에 추가:
    ```
    AUTH_GOOGLE_ID=생성된_클라이언트_ID
    AUTH_GOOGLE_SECRET=생성된_클라이언트_시크릿
