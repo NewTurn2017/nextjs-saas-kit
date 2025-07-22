@@ -33,6 +33,8 @@ Next.js 15로 구축된 현대적이고 확장 가능한 SaaS 스타터 킷입�
 - **Supabase**: PostgreSQL 기반
 - **타입 생성**: 데이터베이스 스키마로부터 TypeScript 타입 자동 생성
 - **마이그레이션**: SQL 스크립트 지원
+- **프로필 관리**: 사용자 프로필 및 아바타 이미지 지원
+- **Storage**: Supabase Storage 통합 (프로필 이미지)
 
 ## 🚀 빠른 시작 가이드
 
@@ -157,6 +159,12 @@ Supabase 대시보드의 SQL Editor에서 다음 중 하나를 실행:
   bun setup:db
   ```
 
+**참고**: 이 스크립트는 다음을 자동으로 설정합니다:
+- NextAuth 인증 테이블 (users, accounts, sessions, verification_tokens)
+- 프로필 관리 테이블 (profiles)
+- 프로필 이미지를 위한 Storage 버킷 (avatars)
+- 필요한 RLS (Row Level Security) 정책
+
 ### 4. 개발 서버 실행
 
 ```bash
@@ -164,6 +172,40 @@ bun dev
 ```
 
 브라우저에서 [http://localhost:3000](http://localhost:3000)을 열어 확인합니다.
+
+## ✨ 주요 기능 상세
+
+### 🖼️ 프로필 관리
+
+사용자는 프로필 페이지에서 다음을 수행할 수 있습니다:
+
+- **프로필 사진 업로드**: 
+  - JPG, PNG, WebP, GIF 형식 지원
+  - 최대 5MB 파일 크기 제한
+  - 자동 이미지 최적화
+  - 기존 이미지 자동 교체
+
+- **이름 변경**:
+  - 실시간 편집 기능
+  - 자동 저장
+
+**구현 세부사항**:
+```typescript
+// 프로필 이미지 업로드
+const formData = new FormData()
+formData.append('file', imageFile)
+await fetch('/api/profile/avatar', { 
+  method: 'POST', 
+  body: formData 
+})
+
+// 이름 업데이트
+await fetch('/api/profile', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ name: newName })
+})
+```
 
 ## 📁 프로젝트 구조
 

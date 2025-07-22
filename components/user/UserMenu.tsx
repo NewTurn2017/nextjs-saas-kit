@@ -41,7 +41,7 @@ export default function UserMenu() {
               role="menuitem"
             >
               <User className="mr-3 h-4 w-4" />
-              Profile
+              프로필
             </a>
 
             <button
@@ -50,7 +50,7 @@ export default function UserMenu() {
               role="menuitem"
             >
               <LogOut className="mr-3 h-4 w-4" />
-              Sign out
+              로그아웃
             </button>
           </div>
         </div>

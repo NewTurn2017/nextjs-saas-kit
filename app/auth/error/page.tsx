@@ -8,16 +8,16 @@ export default function AuthError() {
   const error = searchParams.get('error')
 
   const errorMessages: Record<string, string> = {
-    Configuration: 'There is a problem with the server configuration.',
-    AccessDenied: 'You do not have permission to sign in.',
-    Verification: 'The verification token has expired or has already been used.',
-    Default: 'An error occurred during authentication.',
+    Configuration: '서버 구성에 문제가 있습니다.',
+    AccessDenied: '로그인 권한이 없습니다.',
+    Verification: '인증 토큰이 만료되었거나 이미 사용되었습니다.',
+    Default: '인증 중 오류가 발생했습니다.',
   }
 
   const message = errorMessages[error || 'Default'] || errorMessages.Default
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
       {/* Background Pattern */}
       <div 
         className="absolute inset-0 opacity-20"
@@ -45,10 +45,10 @@ export default function AuthError() {
         </div>
 
         {/* Error Message */}
-        <h1 className="text-3xl font-bold text-white mb-4">
-          Authentication Error
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">
+          인증 오류
         </h1>
-        <p className="text-gray-400 mb-8">
+        <p className="text-gray-600 mb-8">
           {message}
         </p>
 
@@ -58,21 +58,21 @@ export default function AuthError() {
             href="/auth/signin"
             className="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
           >
-            Try Again
+            다시 시도
           </Link>
           <Link
             href="/"
-            className="w-full inline-flex items-center justify-center px-6 py-3 bg-gray-700/50 hover:bg-gray-700 text-gray-300 font-medium rounded-lg transition-all duration-200"
+            className="w-full inline-flex items-center justify-center px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition-all duration-200"
           >
-            Go Home
+            홈으로
           </Link>
         </div>
 
         {/* Debug Info (only in development) */}
         {process.env.NODE_ENV === 'development' && error && (
-          <div className="mt-8 p-4 bg-gray-800/50 rounded-lg text-left">
-            <p className="text-xs text-gray-500 font-mono">
-              Error code: {error}
+          <div className="mt-8 p-4 bg-gray-200/50 rounded-lg text-left">
+            <p className="text-xs text-gray-600 font-mono">
+              오류 코드: {error}
             </p>
           </div>
         )}

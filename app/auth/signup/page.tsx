@@ -47,7 +47,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
       {/* Background Pattern */}
       <div 
         className="absolute inset-0 opacity-20"
@@ -59,16 +59,16 @@ export default function SignUpPage() {
       <div className="relative z-10 w-full max-w-md px-6">
         {/* Logo/Brand */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">
-            Create an account
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">
+            계정 만들기
           </h1>
-          <p className="text-gray-400">
-            Start your journey with us today
+          <p className="text-gray-600">
+            오늘 저희와 함께 시작하세요
           </p>
         </div>
 
         {/* Sign Up Card */}
-        <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-8">
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 p-8">
           {/* Success Message */}
           {isEmailSent && (
             <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
@@ -77,18 +77,18 @@ export default function SignUpPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div className="flex-1">
-                  <h3 className="text-sm font-medium text-green-400">Check your email!</h3>
-                  <p className="text-sm text-gray-300 mt-1">
-                    We've sent a verification link to <span className="font-medium">{email}</span>
+                  <h3 className="text-sm font-medium text-green-600">이메일을 확인하세요!</h3>
+                  <p className="text-sm text-gray-700 mt-1">
+                    <span className="font-medium">{email}</span>로 인증 링크를 보냈습니다
                   </p>
-                  <p className="text-xs text-gray-400 mt-2">
-                    Click the link in your email to complete your sign up. The link expires in 24 hours.
+                  <p className="text-xs text-gray-600 mt-2">
+                    이메일의 링크를 클릭하여 회원가입을 완료하세요. 링크는 24시간 후에 만료됩니다.
                   </p>
                   <button
                     onClick={() => setIsEmailSent(false)}
-                    className="text-xs text-blue-400 hover:text-blue-300 mt-3 inline-block"
+                    className="text-xs text-blue-600 hover:text-blue-700 mt-3 inline-block"
                   >
-                    Didn't receive it? Try again
+                    받지 못하셨나요? 다시 시도하기
                   </button>
                 </div>
               </div>
@@ -97,33 +97,33 @@ export default function SignUpPage() {
 
           {/* Benefits */}
           <div className="mb-6 space-y-2">
-            <div className="flex items-center gap-3 text-sm text-gray-300">
+            <div className="flex items-center gap-3 text-sm text-gray-700">
               <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <span>Free forever for personal use</span>
+              <span>개인 사용자는 영구 무료</span>
             </div>
-            <div className="flex items-center gap-3 text-sm text-gray-300">
+            <div className="flex items-center gap-3 text-sm text-gray-700">
               <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <span>No credit card required</span>
+              <span>신용카드 등록 불필요</span>
             </div>
-            <div className="flex items-center gap-3 text-sm text-gray-300">
+            <div className="flex items-center gap-3 text-sm text-gray-700">
               <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <span>Cancel anytime</span>
+              <span>언제든지 취소 가능</span>
             </div>
           </div>
 
-          <div className="border-t border-gray-700 my-6"></div>
+          <div className="border-t border-gray-300 my-6"></div>
 
           {/* Google Sign Up */}
           <button
             onClick={handleGoogleSignUp}
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white hover:bg-gray-100 text-gray-800 font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white hover:bg-gray-50 text-gray-800 font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed border border-gray-200"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -131,16 +131,16 @@ export default function SignUpPage() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
-            {isLoading ? 'Creating account...' : 'Continue with Google'}
+            {isLoading ? '계정 생성 중...' : 'Google로 계속하기'}
           </button>
 
           {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-600"></div>
+              <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gray-800/50 text-gray-400">or</span>
+              <span className="px-2 bg-white text-gray-500">또는</span>
             </div>
           </div>
 
@@ -148,8 +148,8 @@ export default function SignUpPage() {
           <form onSubmit={handleEmailSignUp}>
             <div className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                  Email address
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  이메일 주소
                 </label>
                 <input
                   id="email"
@@ -158,7 +158,7 @@ export default function SignUpPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   required
-                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 />
               </div>
               
@@ -167,30 +167,30 @@ export default function SignUpPage() {
                 disabled={isLoading}
                 className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Creating account...' : 'Sign up with email'}
+                {isLoading ? '계정 생성 중...' : '이메일로 회원가입'}
               </button>
             </div>
           </form>
 
           {/* Terms */}
-          <p className="mt-6 text-center text-xs text-gray-400">
-            By signing up, you agree to our{' '}
-            <Link href="/terms" className="text-blue-400 hover:text-blue-300">
-              Terms of Service
+          <p className="mt-6 text-center text-xs text-gray-600">
+            회원가입하면 다음에 동의하는 것으로 간주합니다:{' '}
+            <Link href="/terms" className="text-blue-600 hover:text-blue-700">
+              서비스 약관
             </Link>{' '}
-            and{' '}
-            <Link href="/privacy" className="text-blue-400 hover:text-blue-300">
-              Privacy Policy
+            및{' '}
+            <Link href="/privacy" className="text-blue-600 hover:text-blue-700">
+              개인정보 처리방침
             </Link>
           </p>
         </div>
 
         {/* Additional Options */}
         <div className="mt-8 text-center">
-          <p className="text-gray-400">
-            Already have an account?{' '}
-            <Link href="/auth/signin" className="text-blue-400 hover:text-blue-300 font-medium">
-              Sign in
+          <p className="text-gray-600">
+            이미 계정이 있으신가요?{' '}
+            <Link href="/auth/signin" className="text-blue-600 hover:text-blue-700 font-medium">
+              로그인
             </Link>
           </p>
         </div>

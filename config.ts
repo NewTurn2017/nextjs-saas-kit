@@ -1,8 +1,8 @@
 const config = {
 	metadata: {
-		title: "Saas Starter",
-		description: "Saas Starter Kit for demo purpose ",
-		keywords: ["Saas", "Starter Kit", "Demo", "Note Taking", "AI", "Chatbot"],
+		title: "스타터킷",
+		description: "Next.js SaaS 스타터킷 - 빠르고 쉬운 SaaS 개발을 위한 템플릿",
+		keywords: ["SaaS", "스타터킷", "Next.js", "Supabase", "인증", "템플릿"],
 	},
 	theme: {
 		colors: {
@@ -12,7 +12,7 @@ const config = {
 			borderHover: '#D1D5DB'  // Border hover color
 		}
 	},
-	appName: "saas starter kit",
+	appName: "스타터킷",
 	socialLinks: {
 		github: "https://github.com",
 		twitter: "https://twitter.com",

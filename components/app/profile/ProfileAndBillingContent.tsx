@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { Pencil, Upload, X, Save, User } from 'lucide-react';
+import { useToast } from '@/hooks/useToast';
+import { ToastContainer } from '@/components/ui/Toast';
 
 // Animation variants
 const fadeIn = {
@@ -23,6 +26,12 @@ export default function ProfileAndBillingContent() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [profileData, setProfileData] = useState<any>(null);
+	const [isEditingName, setIsEditingName] = useState(false);
+	const [name, setName] = useState('');
+	const [isSavingName, setIsSavingName] = useState(false);
+	const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+	const fileInputRef = useRef<HTMLInputElement>(null);
+	const { toasts, success, error: showError, removeToast } = useToast();
 
 	useEffect(() => {
 		async function fetchProfileData() {
@@ -42,9 +51,10 @@ export default function ProfileAndBillingContent() {
 				
 				const data = await response.json();
 				setProfileData(data);
+				setName(data.profile?.name || data.userData?.name || '');
 			} catch (err) {
 				console.error('Error fetching profile data:', err);
-				setError('Failed to load profile data. Please try again later.');
+				setError('프로필 데이터를 불러오는데 실패했습니다. 나중에 다시 시도해주세요.');
 			} finally {
 				setLoading(false);
 			}
@@ -52,6 +62,114 @@ export default function ProfileAndBillingContent() {
 
 		fetchProfileData();
 	}, []);
+
+	const handleSaveName = async () => {
+		if (!name.trim()) {
+			showError('이름을 입력해주세요');
+			return;
+		}
+
+		setIsSavingName(true);
+		try {
+			const response = await fetch('/api/profile', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ name: name.trim() }),
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || 'Failed to update name');
+			}
+
+			const data = await response.json();
+			setProfileData(prev => ({
+				...prev,
+				profile: data.profile,
+				userData: {
+					...prev.userData,
+					name: data.profile.name
+				}
+			}));
+			setIsEditingName(false);
+			success('이름이 성공적으로 변경되었습니다');
+		} catch (err) {
+			console.error('Error updating name:', err);
+			showError(err.message || '이름 업데이트에 실패했습니다');
+		} finally {
+			setIsSavingName(false);
+		}
+	};
+
+	const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file) return;
+
+		setIsUploadingAvatar(true);
+		const formData = new FormData();
+		formData.append('file', file);
+
+		try {
+			const response = await fetch('/api/profile/avatar', {
+				method: 'POST',
+				body: formData,
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.error || 'Failed to upload avatar');
+			}
+
+			const data = await response.json();
+			setProfileData(prev => ({
+				...prev,
+				profile: {
+					...prev.profile,
+					avatar_url: data.avatarUrl
+				}
+			}));
+			success('프로필 사진이 업로드되었습니다');
+		} catch (err) {
+			console.error('Error uploading avatar:', err);
+			showError(err.message || '프로필 사진 업로드에 실패했습니다');
+		} finally {
+			setIsUploadingAvatar(false);
+			if (fileInputRef.current) {
+				fileInputRef.current.value = '';
+			}
+		}
+	};
+
+	const handleDeleteAvatar = async () => {
+		if (!confirm('프로필 사진을 삭제하시겠습니까?')) return;
+
+		setIsUploadingAvatar(true);
+		try {
+			const response = await fetch('/api/profile/avatar', {
+				method: 'DELETE',
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to delete avatar');
+			}
+
+			setProfileData(prev => ({
+				...prev,
+				profile: {
+					...prev.profile,
+					avatar_url: null
+				}
+			}));
+			success('프로필 사진이 삭제되었습니다');
+		} catch (err) {
+			console.error('Error deleting avatar:', err);
+			showError('프로필 사진 삭제에 실패했습니다');
+		} finally {
+			setIsUploadingAvatar(false);
+		}
+	};
 
 	if (loading) {
 		return (
@@ -76,7 +194,7 @@ export default function ProfileAndBillingContent() {
 					<svg className="h-6 w-6 text-red-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
 					</svg>
-					<p className="font-medium text-red-800">Error</p>
+					<p className="font-medium text-red-800">오류</p>
 				</div>
 				<p className="mt-2 text-red-700">{error}</p>
 			</motion.div>
@@ -84,12 +202,14 @@ export default function ProfileAndBillingContent() {
 	}
 
 	if (!profileData) {
-		return <div>No profile data available</div>;
+		return <div>프로필 데이터가 없습니다</div>;
 	}
 
-	const { userData } = profileData;
+	const { userData, profile } = profileData;
+	const avatarUrl = profile?.avatar_url || userData?.image;
 
 	return (
+		<>
 		<motion.div 
 			className="space-y-10 pb-16 max-w-7xl mx-auto px-4 sm:px-6"
 			initial="hidden"
@@ -107,38 +227,132 @@ export default function ProfileAndBillingContent() {
 							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
 						</svg>
 					</div>
-					<h2 className="text-xl font-bold">User Information</h2>
+					<h2 className="text-xl font-bold">사용자 정보</h2>
 				</div>
 				
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-					<div className="bg-[var(--background-subtle)] p-4 rounded-lg">
-						<label className="text-sm font-medium text-gray-500">Name</label>
-						<p className="font-semibold text-lg mt-1">{userData.name || 'Not set'}</p>
-					</div>
-
-					<div className="bg-[var(--background-subtle)] p-4 rounded-lg">
-						<label className="text-sm font-medium text-gray-500">Email</label>
-						<p className="font-semibold text-lg mt-1 break-all">{userData.email}</p>
-					</div>
-
-					{userData.image && (
-						<div className="col-span-1 md:col-span-2 flex items-center">
-							<div className="mr-4">
-								<img
-									src={userData.image}
-									alt="User avatar"
-									className="w-20 h-20 rounded-full border-4 border-[#5059FE]/20 shadow-md"
-								/>
+				<div className="space-y-6">
+					{/* Profile Picture Section */}
+					<div className="flex items-center space-x-6">
+						<div className="relative group">
+							<div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border-4 border-[#5059FE]/20 shadow-lg">
+								{avatarUrl ? (
+									<img
+										src={avatarUrl}
+										alt="Profile"
+										className="w-full h-full object-cover"
+									/>
+								) : (
+									<div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#5059FE] to-[#7D65F6]">
+										<User className="w-12 h-12 text-white" />
+									</div>
+								)}
 							</div>
-							<div>
-								<label className="text-sm font-medium text-gray-500">Profile Image</label>
-								<p className="text-sm text-gray-600 mt-1">Your profile picture is visible to other users</p>
+							
+							{/* Upload/Delete overlay */}
+							<div className="absolute inset-0 w-24 h-24 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+								<button
+									onClick={() => fileInputRef.current?.click()}
+									disabled={isUploadingAvatar}
+									className="text-white hover:text-gray-200 transition-colors disabled:opacity-50"
+									title="프로필 사진 변경"
+								>
+									<Upload className="w-6 h-6" />
+								</button>
+								{avatarUrl && (
+									<button
+										onClick={handleDeleteAvatar}
+										disabled={isUploadingAvatar}
+										className="text-white hover:text-red-300 transition-colors ml-2 disabled:opacity-50"
+										title="프로필 사진 삭제"
+									>
+										<X className="w-6 h-6" />
+									</button>
+								)}
 							</div>
 						</div>
-					)}
+						
+						<div>
+							<h3 className="font-medium text-gray-900">프로필 사진</h3>
+							<p className="text-sm text-gray-500 mt-1">
+								JPG, PNG, WebP 또는 GIF (최대 5MB)
+							</p>
+							{isUploadingAvatar && (
+								<p className="text-sm text-[#5059FE] mt-1">업로드 중...</p>
+							)}
+						</div>
+						
+						<input
+							ref={fileInputRef}
+							type="file"
+							accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+							onChange={handleAvatarUpload}
+							className="hidden"
+						/>
+					</div>
+					
+					{/* Name Section */}
+					<div className="bg-[var(--background-subtle)] p-4 rounded-lg">
+						<div className="flex items-center justify-between">
+							<label className="text-sm font-medium text-gray-500">이름</label>
+							{!isEditingName && (
+								<button
+									onClick={() => setIsEditingName(true)}
+									className="text-[#5059FE] hover:text-[#7D65F6] transition-colors"
+									title="이름 수정"
+								>
+									<Pencil className="w-4 h-4" />
+								</button>
+							)}
+						</div>
+						
+						{isEditingName ? (
+							<div className="flex items-center mt-1 space-x-2">
+								<input
+									type="text"
+									value={name}
+									onChange={(e) => setName(e.target.value)}
+									className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5059FE] focus:border-transparent"
+									placeholder="이름을 입력하세요"
+									disabled={isSavingName}
+								/>
+								<button
+									onClick={handleSaveName}
+									disabled={isSavingName}
+									className="p-2 bg-[#5059FE] text-white rounded-lg hover:bg-[#7D65F6] transition-colors disabled:opacity-50"
+									title="저장"
+								>
+									<Save className="w-4 h-4" />
+								</button>
+								<button
+									onClick={() => {
+										setIsEditingName(false);
+										setName(profile?.name || userData?.name || '');
+									}}
+									disabled={isSavingName}
+									className="p-2 text-gray-500 hover:text-gray-700 transition-colors disabled:opacity-50"
+									title="취소"
+								>
+									<X className="w-4 h-4" />
+								</button>
+							</div>
+						) : (
+							<p className="font-semibold text-lg mt-1">
+								{profile?.name || userData?.name || '설정되지 않음'}
+							</p>
+						)}
+					</div>
+
+					{/* Email Section */}
+					<div className="bg-[var(--background-subtle)] p-4 rounded-lg">
+						<label className="text-sm font-medium text-gray-500">이메일</label>
+						<p className="font-semibold text-lg mt-1 break-all">{userData.email}</p>
+					</div>
 				</div>
 			</motion.div>
 
 		</motion.div>
+
+		<ToastContainer toasts={toasts} onClose={removeToast} />
+	</>
 	);
-} 
+}

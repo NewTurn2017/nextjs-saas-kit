@@ -17,10 +17,10 @@ export default function RootLayout({
     <html lang="en">
       <SessionProvider>
         <body
-          className="antialiased min-h-screen flex flex-col"
+          className="antialiased h-screen flex flex-col overflow-hidden"
         >
           <Toaster position="top-center" />
-          <main className="flex-grow">
+          <main className="flex-1 overflow-auto">
             {children}
           </main>
           <FooterWrapper />

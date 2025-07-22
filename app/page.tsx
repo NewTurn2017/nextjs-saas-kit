@@ -9,9 +9,9 @@ export default async function Home() {
   const session = await auth()
   const user = session?.user
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full bg-gradient-to-br from-blue-50 to-purple-50">
       {/* Navigation Menu */}
-      <nav className="bg-[var(--background)] shadow-sm">
+      <nav className="bg-white/80 backdrop-blur-sm shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Left side - Logo and navigation links */}
@@ -21,14 +21,14 @@ export default async function Home() {
               </Link>
               <div className="flex space-x-6">
                 <Link href="/" className="text-lg text-gray-600 hover:text-gray-900 link-hover">
-                  Home
+                  홈
                 </Link>
                 {user && (
                   <Link
                     href="/app/"
                     className="text-lg text-gray-600 hover:text-gray-900 link-hover"
                   >
-                    App
+                    앱
                   </Link>
                 )}
               </div>
@@ -62,9 +62,9 @@ export default async function Home() {
             ) : (
               <Link
                 href="/app"
-                className="inline-flex items-cejnter gap-2 bg-white border border-gray-300 text-gray-800 hover:bg-[var(--background)] hover:border-gray-400 font-semibold py-2.5 px-6 rounded-full "
+                className="inline-flex items-center gap-2 bg-white border border-gray-300 text-gray-800 hover:bg-[var(--background)] hover:border-gray-400 font-semibold py-2.5 px-6 rounded-full "
               >
-                Go to App
+                앱으로 이동
               </Link>
             )}
           </div>
