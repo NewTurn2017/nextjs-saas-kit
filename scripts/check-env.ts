@@ -95,6 +95,11 @@ function checkEnv() {
       
       console.error('Please update your .env.local file with the correct values.')
       console.error('Refer to the README.md for setup instructions.')
+      console.error('')
+      console.error('⚠️  Common issues:')
+      console.error('  - Make sure values do NOT have quotes around them')
+      console.error('  - SUPABASE_SECRET_KEY must be the Service Role Key (not Anon Key)')
+      console.error('  - Check for trailing spaces in your values')
       
       process.exit(1)
     }

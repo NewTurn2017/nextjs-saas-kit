@@ -35,6 +35,17 @@ export function SupabaseAdapter(options: {
   secret: string
 }): Adapter {
   const { url, secret } = options
+  
+  // Validate required environment variables
+  if (!url || !secret) {
+    throw new Error(
+      "Missing Supabase configuration. Please check your environment variables:\n" +
+      "- NEXT_PUBLIC_SUPABASE_URL\n" +
+      "- SUPABASE_SECRET_KEY (must be Service Role Key, not Anon Key)\n" +
+      "Make sure values don't have quotes around them."
+    )
+  }
+  
   const supabase = createClient(url, secret, {
     // Use public schema instead of next_auth
     db: { schema: "public" },
@@ -75,7 +86,15 @@ export function SupabaseAdapter(options: {
         .eq("email", email)
         .maybeSingle()
 
-      if (error) throw error
+      if (error) {
+        console.error("Error in getUserByEmail:", error)
+        throw new Error(
+          `Failed to get user by email. Please check:\n` +
+          `1. The 'users' table exists in your database\n` +
+          `2. You've run the setup-database.sql script\n` +
+          `3. Your SUPABASE_SECRET_KEY is correct (Service Role Key)`
+        )
+      }
       if (!data) return null
 
       return format(data)
@@ -87,7 +106,15 @@ export function SupabaseAdapter(options: {
         .match({ provider, providerAccountId })
         .maybeSingle()
 
-      if (error) throw error
+      if (error) {
+        console.error("Error in getUserByAccount:", error)
+        throw new Error(
+          `Failed to get user by account. Please check:\n` +
+          `1. The 'accounts' and 'users' tables exist in your database\n` +
+          `2. You've run the setup-database.sql script completely\n` +
+          `3. Your SUPABASE_SECRET_KEY is correct (Service Role Key, not Anon Key)`
+        )
+      }
       if (!data || !data.users) return null
 
       return format(data.users)
